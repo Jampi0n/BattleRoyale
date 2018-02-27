@@ -1,0 +1,583 @@
+package Inventory
+
+import RuntimeInitialize
+import MapBounds
+import SkillGeneration
+import ItemGeneration
+import General
+import ClosureTimers
+import HashMap
+import BonusMod
+import ObjectIds
+
+boolean loading = false
+boolean noDrop = false
+
+constant integer ABILITY_LEFT = 'A00D'
+constant integer ABILITY_RIGHT = 'A00C'
+constant integer MAX_PAGE = 3
+
+constant integer DUMMY_ITEM_Q = 'I00X'
+constant integer DUMMY_ITEM_W = 'I00Y'
+constant integer DUMMY_ITEM_E = 'I00Z'
+constant integer DUMMY_ITEM_R = 'I010'
+
+constant integer DUMMY_SKILL_Q = 'A01K'
+constant integer DUMMY_SKILL_W = 'A01L'
+constant integer DUMMY_SKILL_E = 'A01M'
+constant integer DUMMY_SKILL_R = 'A01N'
+
+constant integer array INSTANT_BUFF = ['B003', 'B002', 'B004', 'B005']
+
+unit array cooldownRequirement
+real array cooldownTime
+boolean array cooldownActive
+
+constant integer COOL_DOWN_Q = 'h00J'
+constant integer COOL_DOWN_W = 'h00H'
+constant integer COOL_DOWN_E = 'h00I'
+constant integer COOL_DOWN_R = 'h00K'
+
+function isDummySkillItem(int itemTypeId) returns boolean
+    return itemTypeId == DUMMY_ITEM_Q or itemTypeId == DUMMY_ITEM_W or itemTypeId == DUMMY_ITEM_E or itemTypeId == DUMMY_ITEM_R
+
+function isNoPowerUp() returns boolean
+    return GetItemType(GetManipulatedItem()) != ITEM_TYPE_POWERUP and GetItemType(GetManipulatedItem()) != ITEM_TYPE_PURCHASABLE and GetItemType(GetManipulatedItem()) != ITEM_TYPE_CAMPAIGN
+
+function isNotLoading() returns boolean
+    return not loading
+
+function isDrop() returns boolean
+    return not noDrop
+
+function unit.addPermanentEffect(int itemTypeId)
+    //print("+ perma")
+
+function unit.removePermanentEffect(int itemTypeId)
+    //print("- perma")
+
+function item.removeItemNoDrop()
+    noDrop=true
+    this.remove()
+    noDrop=false
+
+public function abilityOfItem(integer abilityTypeId) returns int
+    return Skill.convertTypeId(abilityTypeId).getItem().getInventoryItem()
+
+
+public class Inventory
+
+    private unit assocUnit
+
+    private int currentPage = 0
+    private Skill array[4] activeSkills
+    private int array[6] itemChargesInventory
+    private item array[MAX_PAGE*6] items
+    private static constant unitToInventory = new HashMap<unit, Inventory>()
+
+    construct(unit whichUnit)
+        this.assocUnit = whichUnit
+        unitToInventory.put(this.assocUnit, this)
+        this.assocUnit.addDummyObjects()
+
+        for i=0 to 3
+            activeSkills[i] = null
+
+        this.saveCurrentPage()
+
+    function saveCurrentPage()
+        
+        if this.assocUnit.isAlive() and isNotLoading()
+            loading = true
+            debugPrint("updating page: "+currentPage.toString())
+            if currentPage == 0
+                //correct dummy skill icons
+                for i = 0 to 5
+                    let itm = this.assocUnit.itemInSlot(i)
+                    let itemTypeId = itm.getTypeId()
+
+                    //add dummy skills, if first slots are empty
+                    if i<=3
+                        if itm == null
+                            this.addDummyItemToSlot(i)
+                            //print("slot empty")
+                        if isDummySkillItem(itemTypeId)
+                            if i==0 and itemTypeId != DUMMY_ITEM_Q
+                                //print("wrong: q")
+                                RemoveItem(UnitRemoveItemFromSlot(this.assocUnit, i))
+                                addDummyItemToSlot(i)
+                            else if i==1 and itemTypeId != DUMMY_ITEM_W
+                                //print("wrong: w")
+                                RemoveItem(UnitRemoveItemFromSlot(this.assocUnit, i))
+                                addDummyItemToSlot(i)
+                            else if i==2 and itemTypeId != DUMMY_ITEM_E
+                                //print("wrong: e")
+                                RemoveItem(UnitRemoveItemFromSlot(this.assocUnit, i))
+                                addDummyItemToSlot(i)
+                            else if i==3 and itemTypeId != DUMMY_ITEM_R
+                                //print("wrong: r")
+                                RemoveItem(UnitRemoveItemFromSlot(this.assocUnit, i))
+                                addDummyItemToSlot(i)
+                    else
+                        //print("dummy item in slot"+i.toString())
+                        if isDummySkillItem(itemTypeId)
+                            RemoveItem(UnitRemoveItemFromSlot(this.assocUnit, i))
+
+            //save items
+            for i=0 to 5
+                let itm = this.assocUnit.itemInSlot(i)
+                if itm != null
+                    this.itemChargesInventory[i] = GetItemCharges(itm)
+                    this.items[this.currentPage*6+i] = itm
+                else
+                    this.itemChargesInventory[i] = 0
+                    this.items[this.currentPage*6+i] = null
+
+            loading = false
+
+
+    function saveCurrentPageNext()
+        doAfter(0, ()-> saveCurrentPage())
+
+    function loadCurrentPage()
+        loading = true
+        for i = 0 to 5
+            let itm = this.assocUnit.itemInSlot(i)
+            let itemTypeId = itm.getTypeId()
+            this.assocUnit.removeItem(itm)
+
+            if isDummySkillItem(itemTypeId)
+                itm.remove()
+            else
+                itm.setVisible(true)
+
+        for i = 0 to 5
+            let itm = this.items[this.currentPage*6+i]
+            if itm == null
+                //to place items at the correct slot
+                this.assocUnit.addItem('phlt')
+            else
+                print("item in slot "+i.toString())
+                itm.setVisible(true)
+                UnitAddItem(this.assocUnit, itm)
+    
+        for i = 0 to 5
+            let itm = this.assocUnit.itemInSlot(i)
+            if itm.getTypeId() == 'phlt'
+                itm.remove()
+
+        loading = false
+        print("loaded page, now save it")
+        this.saveCurrentPageNext()
+
+
+    function findItemTypeSlot(int itemTypeId) returns int
+        for i = 0 to 6 * MAX_PAGE -1
+            if this.items[i].getTypeId() == itemTypeId
+                return i
+        return -1
+
+    function findFirstEmptySlot(int startSlot, int endSlot) returns int
+        for i = startSlot to endSlot
+            if i >= MAX_PAGE*6
+                return -1
+            let itm = this.items[i]
+            if itm == null or isDummySkillItem(itm.getTypeId())
+                return i
+        return -1
+
+    function removeSlotAll(int slot) returns int
+        print("remove slot all")
+        let itm = this.assocUnit.itemInSlot(slot)
+        if itm == null
+            return -2
+
+        let itemTypeId = itm.getTypeId()
+        if isDummySkillItem(itemTypeId)
+            return -2
+
+        
+
+        Item itemClass = Item.convertTypeId(itemTypeId)
+        itemClass.createWorldItem(this.assocUnit.getPos(), GetItemCharges(itm))
+
+        let abilityTypeId = itemClass.getSkill().getTypeId()
+
+        if this.assocUnit.removeAbility(abilityTypeId)
+            debugPrint("Q was removed")
+            this.activeSkills[0] = null
+            this.addDummySkillToSlot(0)
+
+        if this.assocUnit.removeAbility(abilityTypeId+1)
+            debugPrint("W was removed")
+            this.activeSkills[1] = null
+            this.addDummySkillToSlot(1)
+
+        if this.assocUnit.removeAbility(abilityTypeId+2)
+            debugPrint("E was removed")
+            this.activeSkills[2] = null
+            this.addDummySkillToSlot(2)
+
+        if this.assocUnit.removeAbility(abilityTypeId+3)
+            debugPrint("R was removed")
+            this.activeSkills[3] = null
+            this.addDummySkillToSlot(3)
+
+        this.items[slot] = null
+        itm.setVisible(true)
+        itm.remove()
+        this.saveCurrentPageNext()
+        return 1
+
+    function removeSlotCharges(int slot, int charges) returns int
+        let itm = this.items[slot]
+        if itm == null
+            return -2
+
+        int newCharges = GetItemCharges(itm) - charges
+        int ret
+        let itemTypeId = itm.getTypeId()
+
+        if newCharges <= 0
+            if newCharges == 0
+                ret = 0
+                for i = 0 to 3
+                    if this.assocUnit.hasAbility(Item.convertTypeId(itemTypeId).getSkill().getTypeId()+i)
+                        this.removeAbilityDelayed(activeSkills[i].getTypeId(), 0.5)
+            else
+                ret = -1
+            itm.setVisible(true)
+            itm.removeItemNoDrop()
+            this.items[slot] = null
+        else //update charges
+            ret = 1
+            print("update charges: "+newCharges.toString())
+            SetItemCharges(itm, newCharges)
+
+        saveCurrentPageNext()
+        return ret
+
+    function removeItemTypeAll(int itemTypeId) returns int
+        let slot = this.findItemTypeSlot(itemTypeId)
+        if slot != -1
+            return this.removeSlotAll(slot)
+        return -3
+
+    function removeItemTypeCharges(int itemTypeId, int charges) returns int
+        let slot = this.findItemTypeSlot(itemTypeId)
+        if slot != -1
+            return this.removeSlotCharges(slot, charges)
+        return -3
+
+    function dropAllItems()
+        for i = 0 to MAX_PAGE*6-1
+            this.removeSlotAll(i)
+
+    function addItemType(int itemTypeId, int charges, int page) returns int
+        int slot
+        if page!=2
+            slot = this.findItemTypeSlot(itemTypeId)
+            if slot==-1 or page==-1
+                slot = this.findFirstEmptySlot(page*6, page*6+5)
+                if slot==-1 or page==-1
+                    Item.convertTypeId(itemTypeId).createWorldItem(this.assocUnit.getPos(), charges)
+                    print("1 inventory full")
+                    return -1
+                else
+                    print("1 create new item -> "+slot.toString())
+                    item itm = createItem(itemTypeId, this.assocUnit.getPos())
+                        ..setVisible(false)
+                    SetItemCharges(itm, charges)
+                    this.items[slot]=itm
+                    this.loadCurrentPage()
+            else
+                print("1 change charges"+slot.toString())
+                item itm = items[slot]
+                SetItemCharges(itm, GetItemCharges(itm) + charges)
+        else
+            slot = this.findFirstEmptySlot(12, 17)
+            if slot == -1
+                Item.convertTypeId(itemTypeId).createWorldItem(this.assocUnit.getPos(), charges)
+                print("2 inventory full")
+                return -1
+            else
+                print("2 create new item"+slot.toString())
+                item itm = createItem(itemTypeId, this.assocUnit.getPos())
+                    ..setVisible(false)
+                this.assocUnit.addPermanentEffect(itemTypeId)
+                this.items[slot]=itm
+                this.loadCurrentPage()
+
+        return slot
+
+    private function endOfCooldown(int slot)
+        int playerIndex = 4 * this.assocUnit.getOwner().getId()
+        cooldownRequirement[playerIndex + slot].setOwner(Player( (playerIndex/4).toInt() ), false)
+        cooldownTime[playerIndex + slot] = -1
+        cooldownActive[playerIndex + slot] = false
+
+    private function skillOnCooldown(int slot, real time)
+        int playerIndex = 4 * this.assocUnit.getOwner().getId()
+        cooldownActive[playerIndex + slot] = false
+        cooldownRequirement[playerIndex + slot].setOwner(Player(PLAYER_NEUTRAL_PASSIVE), false)
+        cooldownTime[playerIndex + slot] = time
+        doAfter(time, () -> this.endOfCooldown(slot) )
+
+    private function learnSkillFromItem(integer slot)
+    
+        int itemTypeId = this.assocUnit.itemInSlot(slot).getTypeId()
+        int abilityTypeId
+
+        print("Item:"+(Item.convertTypeId(itemTypeId) == null).toString())
+
+
+        Skill newSkill = Item.convertTypeId(itemTypeId).getSkill()
+
+        print("Skill:"+(newSkill == null).toString())
+
+        for i=0 to 3
+            abilityTypeId = newSkill.getTypeId()+i
+            if this.assocUnit.hasAbility( abilityTypeId )
+                this.assocUnit.removeAbility(abilityTypeId)
+                this.addDummySkillToSlot(i)
+                this.activeSkills[i] = null
+
+        if activeSkills[slot] != null
+            this.assocUnit.removeAbility(activeSkills[slot].getTypeId()+slot)
+
+        abilityTypeId =  newSkill.getTypeId()+slot
+
+        print("learn ability "+int2fourchar(abilityTypeId))
+
+        this.removeDummySkillFromSlot(slot)
+        this.assocUnit.addAbility(abilityTypeId)
+
+        int playerIndex = 4 * this.assocUnit.getOwner().getId()
+        this.skillOnCooldown(slot, newSkill.getCooldown())
+        cooldownActive[playerIndex + slot] = true
+
+        this.activeSkills[slot] = newSkill
+
+    private function learnSkillTimer()
+
+        int charges0
+        int charges1
+
+        for i = 0 to 5
+            let itm = this.assocUnit.itemInSlot(i)
+            if itm != null
+                charges0 = itemChargesInventory[i]
+                charges1 = GetItemCharges(itm)
+                SetItemCharges(itm, charges0)
+            else
+                charges0 = 0
+                charges1 = 0
+
+                itemChargesInventory[i] = 0
+
+            if charges0 > charges1
+                if i<=3
+                    this.learnSkillFromItem(i)
+                    printTimedToPlayer("Learn Please!", 5, this.assocUnit.getOwner())
+                else
+                    printTimedToPlayer("You cannot learn items in these slots!", 5, this.assocUnit.getOwner())
+
+
+    private function changePage(int newPage)
+        this.currentPage = newPage
+        this.loadCurrentPage()
+
+    protected static function onSpellCast()
+        let abilityTypeId = GetSpellAbilityId()
+        let caster = GetTriggerUnit()
+        Inventory triggerInventory = unitToInventory.get(caster)
+        if triggerInventory == null
+            return
+
+        if abilityTypeId == LEARN_SKILL
+            doAfter(0, () -> triggerInventory.learnSkillTimer())
+            return
+        
+        if abilityTypeId == ABILITY_LEFT
+            triggerInventory.currentPage -= 1
+            if triggerInventory.currentPage < 0
+                triggerInventory.currentPage = MAX_PAGE-1
+            triggerInventory.loadCurrentPage()
+            return
+
+        if abilityTypeId == ABILITY_RIGHT
+            triggerInventory.currentPage += 1
+            if triggerInventory.currentPage > MAX_PAGE-1
+                triggerInventory.currentPage = 0
+            triggerInventory.loadCurrentPage()
+            return
+        
+        int itemTypeId = Skill.convertTypeId(abilityTypeId).getItem().getInventoryItem()
+        triggerInventory.removeItemTypeCharges(itemTypeId, 1)
+        
+    protected static function onItemPickUp()
+        let itm = GetManipulatedItem()
+        let itemTypeId = itm.getTypeId()
+        let triggerUnit = GetTriggerUnit()
+        int page = -1
+        itemtype itemClass
+        Inventory triggerInventory = unitToInventory.get(triggerUnit)
+        print("on item pick up: "+itm.getName()+" "+itm.getHandleId().toString())
+
+        if triggerInventory == null
+            return
+        print("not null")
+        if isDummySkillItem(itemTypeId)
+            return
+        print("not a dummy item")
+        if isNoPowerUp()
+            print("inventory item")
+            triggerInventory.saveCurrentPageNext()
+        else
+            print("world item")
+            itemClass = GetItemType(itm)
+            if itemClass == ITEM_TYPE_POWERUP
+                page = 0
+            else if itemClass == ITEM_TYPE_PURCHASABLE
+                page = 1
+            else if itemClass == ITEM_TYPE_CAMPAIGN
+                page = 2
+
+            triggerInventory.addItemType(itemTypeId+1, Item.getItemCharges(itm), page)
+
+    protected static function onItemDrop()
+        let itm = GetManipulatedItem()
+        let itemTypeId = itm.getTypeId()
+        let triggerUnit = GetTriggerUnit()
+        Inventory triggerInventory = unitToInventory.get(triggerUnit)
+        if triggerInventory == null
+            return
+        
+        print("loading "+loading.toString())
+        
+        print("on item drop: "+itm.getName()+" "+itm.getHandleId().toString())
+
+        triggerInventory.saveCurrentPageNext()
+        if isNoPowerUp()
+            doAfter(0, () -> (begin
+                print("on item drop, create world item: "+itm.getName()+ " charges = "+GetItemCharges(itm).toString())
+                Item.convertTypeId(itemTypeId).createWorldItem(itm.getPos(), GetItemCharges(itm))
+                itm.remove()
+            end))
+
+        let itemClass = Item.convertTypeId(itemTypeId)
+        if itemClass == null
+            //print ("nullpointer")
+            return
+
+        let skill = itemClass.getSkill()
+
+        if GetItemType(itm) == ITEM_TYPE_ARTIFACT
+            for i = 0 to 3
+                let abilityTypeId = skill.getTypeId()+i
+                if triggerInventory.assocUnit.hasAbility(abilityTypeId)
+                    triggerInventory.assocUnit.removeAbility(abilityTypeId)
+                    triggerInventory.addDummySkillToSlot(i)
+
+        if GetItemType(itm) == ITEM_TYPE_PERMANENT
+            triggerInventory.assocUnit.removePermanentEffect(itemTypeId)
+
+    protected static function onItemSwap()
+        if GetIssuedOrderId()>=852002 and GetIssuedOrderId()<=852007
+            Inventory triggerInventory = unitToInventory.get(GetTriggerUnit())
+            if triggerInventory == null
+                return
+            triggerInventory.saveCurrentPageNext()
+
+    private function addDummyItemToSlot(int slot)
+        debugPrint("Adding Dummy Item to slot "+slot.toString())
+        if(slot==0)
+            this.assocUnit.addItem(DUMMY_ITEM_Q)
+        else if(slot==1)
+            this.assocUnit.addItem(DUMMY_ITEM_W)
+        else if(slot==2)
+            this.assocUnit.addItem(DUMMY_ITEM_E)
+        else if(slot==3)
+            this.assocUnit.addItem(DUMMY_ITEM_R)
+        else
+            debugPrint("InventorySystem.AddDummyItemToSlot: Cannot add dummy item to this slot!")
+
+    private function addDummySkillToSlot(int slot)
+        debugPrint("Adding Dummy Skill to slot "+slot.toString())
+        if(slot==0)
+            this.assocUnit.addAbility(DUMMY_SKILL_Q)
+        else if(slot==1)
+            this.assocUnit.addAbility(DUMMY_SKILL_W)
+        else if(slot==2) 
+            this.assocUnit.addAbility(DUMMY_SKILL_E)
+        else if(slot==3)
+            this.assocUnit.addAbility(DUMMY_SKILL_R)
+        else
+            debugPrint("InventorySystem.AddDummySkillToSlot: Cannot add dummy skill to this slot!")
+
+    private function removeDummySkillFromSlot(int slot)
+        debugPrint("Removing Dummy Skill from slot "+slot.toString())
+        if(slot==0)
+            this.assocUnit.removeAbility(DUMMY_SKILL_Q)
+        else if(slot==1)
+            this.assocUnit.removeAbility(DUMMY_SKILL_W)
+        else if(slot==2) 
+            this.assocUnit.removeAbility(DUMMY_SKILL_E)
+        else if(slot==3)
+            this.assocUnit.removeAbility(DUMMY_SKILL_R)
+        else
+            debugPrint("InventorySystem.RemoveDummySkillFromSlot: Cannot remove dummy skill from this slot!")
+
+    function removeAbilityDelayed(int abilityTypeId, real after)
+        doAfter(after, () -> (begin
+            assocUnit.removeAbility(abilityTypeId)
+            this.addDummySkillToSlot(Skill.getHotkey(abilityTypeId))
+        end))
+
+
+
+function unit.addDummyObjects()
+    this.addAbility(DUMMY_SKILL_Q)
+    this.addAbility(DUMMY_SKILL_W)
+    this.addAbility(DUMMY_SKILL_E)
+    this.addAbility(DUMMY_SKILL_R)
+
+    this.addItem(DUMMY_ITEM_Q)
+    this.addItem(DUMMY_ITEM_W)
+    this.addItem(DUMMY_ITEM_E)
+    this.addItem(DUMMY_ITEM_R)
+
+
+init
+    CreateTrigger()
+        ..registerAnyUnitEvent(EVENT_PLAYER_UNIT_PICKUP_ITEM)
+        ..addCondition(Condition(function isNotLoading))
+        ..addAction(function Inventory.onItemPickUp)
+
+    CreateTrigger()
+        ..registerAnyUnitEvent(EVENT_PLAYER_UNIT_DROP_ITEM)
+        ..addCondition(Condition(function isNotLoading))
+        ..addCondition(Condition(function isDrop))
+        ..addAction(function Inventory.onItemDrop)
+
+    CreateTrigger()
+        ..registerAnyUnitEvent(EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER)
+        ..addCondition(Condition(function isNotLoading))
+        ..addAction(function Inventory.onItemSwap)
+
+    CreateTrigger()
+        ..registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
+        ..addAction(function Inventory.onSpellCast)
+
+    for i = 0 to bj_MAX_PLAYERS-1
+        cooldownRequirement[4*i] = createUnit(players[i], COOL_DOWN_Q, playableCenter, angle(0) )
+        cooldownRequirement[4*i+1] = createUnit(players[i], COOL_DOWN_W, playableCenter, angle(0) )
+        cooldownRequirement[4*i+2] = createUnit(players[i], COOL_DOWN_E, playableCenter, angle(0) )
+        cooldownRequirement[4*i+3] = createUnit(players[i], COOL_DOWN_R, playableCenter, angle(0) )
+
+        for j = 0 to 3
+            cooldownTime[4*i+j] = -1
+            cooldownActive[4*i+j] = false
+        
+         
+         

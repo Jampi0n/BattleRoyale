@@ -1,0 +1,4 @@
+package General
+
+public function debugPrint(string text)
+    print(text)

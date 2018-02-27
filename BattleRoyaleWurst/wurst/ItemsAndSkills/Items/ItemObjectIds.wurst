@@ -1,0 +1,27 @@
+package ItemObjectIds
+
+import ItemGeneration
+import SkillObjectIds
+
+public constant USABLE_A = compiletime(newItem(ItemType.Usable))
+public constant USABLE_B = compiletime(newItem(ItemType.Usable))
+public constant USABLE_C = compiletime(newItem(ItemType.Usable))
+
+public constant PERMA_A = compiletime(newItem(ItemType.Permanent))
+public constant PERMA_B = compiletime(newItem(ItemType.Permanent))
+public constant PERMA_C = compiletime(newItem(ItemType.Permanent))
+
+@compiletime
+function setupTest()
+    USABLE_A.getItemObject()
+        ..setName("U-A")
+    USABLE_B.getItemObject()
+        ..setName("U-B")
+    USABLE_C.getItemObject()
+        ..setName("U-C")
+    PERMA_A.getItemObject()
+        ..setName("P-A")
+    PERMA_B.getItemObject()
+        ..setName("P-B")
+    PERMA_C.getItemObject()
+        ..setName("P-C")

@@ -1,0 +1,228 @@
+package RuntimeInitialize
+
+import ItemGeneration
+import CompiletimeFinalize
+import Execute
+import ObjectIds
+import HashMap
+
+int array itemTypeId
+int array itemItemType
+int array skillAbilityTypeId
+int array skillToItemId
+
+int forCounter
+int stringPos = 0
+string stringArray = ""
+string currentString = ""
+int stringLength = 0
+
+
+public class Skill
+
+    private int skillId
+    private int array[4] abilities
+    private Item assocItem
+    protected static constant idMap = new HashMap<int, Skill>()
+    protected static constant typeIdMap = new HashMap<int, Skill>()
+    protected static constant hotkeyMap = new HashMap<int, int>()
+
+
+    construct(int skillId)
+        //======================
+        //  connects classes, ids and typeIds
+        //======================
+        this.skillId = skillId
+        idMap.put(skillId, this)
+
+        typeIdMap.put(skillAbilityTypeId[skillId], this)
+        typeIdMap.put(skillAbilityTypeId[skillId]+1, this)
+        typeIdMap.put(skillAbilityTypeId[skillId]+2, this)
+        typeIdMap.put(skillAbilityTypeId[skillId]+3, this)
+
+        this.abilities[0] = skillAbilityTypeId[skillId]
+        this.abilities[1] = skillAbilityTypeId[skillId]+1
+        this.abilities[2] = skillAbilityTypeId[skillId]+2
+        this.abilities[3] = skillAbilityTypeId[skillId]+3
+
+        hotkeyMap.put(skillAbilityTypeId[skillId], 0)
+        hotkeyMap.put(skillAbilityTypeId[skillId]+1, 1)
+        hotkeyMap.put(skillAbilityTypeId[skillId]+2, 2)
+        hotkeyMap.put(skillAbilityTypeId[skillId]+3, 3)
+
+        this.assocItem = Item.convertId(skillToItemId[skillId])
+        this.assocItem.assocSkill = this
+
+        print((this.getId()).toString()+" -> "+(this.assocItem.getId()).toString())
+
+
+        //======================
+
+    static function convertId(int id) returns Skill
+        return idMap.get(id)
+
+    static function convertTypeId(int typeId) returns Skill
+        return typeIdMap.get(typeId)
+
+    function getId() returns int
+        return this.skillId
+
+    function getTypeId() returns int
+        print("here?")
+        return this.abilities[0]
+
+    static function getHotkey(int abilityTypeId) returns int
+        return hotkeyMap.get(abilityTypeId)
+
+    function getItem() returns Item
+        return this.assocItem
+
+    function getCooldown() returns real
+        return 3.
+
+
+public class Item
+
+    private int itemId
+    private int worldItem
+    private int inventoryItem
+    private ItemType itemType
+    private static constant itemChargesMap = new HashMap<item, int>()
+    protected Skill assocSkill //only if itemType==ItemType.Skill
+    protected static constant idMap = new HashMap<int, Item>()
+    protected static constant typeIdMap = new HashMap<int, Item>()
+
+    construct(int itemId)
+        //======================
+        //  connects classes, ids and typeIds
+        //======================
+        this.itemId = itemId
+        idMap.put(itemId, this)
+
+        this.worldItem = itemTypeId[itemId]
+        this.inventoryItem = itemTypeId[itemId]+1
+
+        typeIdMap.put(itemTypeId[itemId], this)
+        typeIdMap.put(itemTypeId[itemId]+1, this)
+
+
+        this.assocSkill = null
+
+        if itemItemType[itemId] == 0
+            this.itemType = ItemType.Skill
+        else if itemItemType[itemId] == 1
+            this.itemType = ItemType.Usable
+        else if itemItemType[itemId] == 2
+            this.itemType = ItemType.Permanent 
+        //======================
+
+    static function convertId(int id) returns Item
+        return idMap.get(id)
+
+    static function convertTypeId(int typeId) returns Item
+        let tmp = typeIdMap.get(typeId)
+        if tmp == null
+            print("cannot convert "+typeId.toString()+" = "+int2fourchar(typeId))
+            createUnit(players[0], 'hfoo', vec2(0,0), angle(0))
+        return tmp
+
+    function getId() returns int
+        return this.itemId
+
+    function getWorldItem() returns int
+        return this.worldItem
+
+    function getInventoryItem() returns int
+        return this.inventoryItem  
+        
+    function createWorldItem(vec2 pos, int charges) returns item
+        print("create world item")
+        let itm = createItem(worldItem, pos)
+        itemChargesMap.put(itm, charges)
+        return itm
+
+    function getSkill() returns Skill
+        if this.assocSkill!=null
+            print((this.getId()).toString()+" -> "+(this.assocSkill.getId()).toString())
+        else
+            print((this.getId()).toString()+" -> "+"null")
+        return this.assocSkill
+
+    static function getItemCharges(item itm) returns int
+        return itemChargesMap.get(itm)
+
+    static function setItemCharges(item itm, int charges)
+        itemChargesMap.put(itm, charges)
+
+function createClassObjects()
+    print(itemIdCount)
+    print(skillIdCount)
+
+    for i = 0 to itemIdCount-1
+        new Item(i)
+
+    for i = 0 to skillIdCount-1
+        new Skill(i)
+
+init
+    forCounter = 0
+    stringPos = 0
+    stringArray = stringItemTypeIds
+    currentString = ""
+    stringLength = stringArray.length()
+    executeWhile(10, () -> (stringPos < stringLength) , () -> (begin
+        string currentString = stringArray.substring(stringPos, stringPos+3)
+        itemTypeId[forCounter] = fourchar2int("I"+currentString)
+
+        stringPos += 3
+        forCounter++
+    end))
+
+    forCounter = 0
+    stringPos = 0
+    stringArray = stringItemItemTypes
+    currentString = ""
+    stringLength = stringArray.length()
+    executeWhile(20, () -> (stringPos < stringLength) , () -> (begin
+        string currentString = stringArray.charAt(stringPos)
+        itemItemType[forCounter] = currentString.toInt()
+
+        stringPos++
+        forCounter++
+    end))
+
+    forCounter = 0
+    stringPos = 0
+    stringArray = stringAbilityTypeIds
+    currentString = ""
+    stringLength = stringArray.length()
+    executeWhile(10, () -> (stringPos < stringLength) , () -> (begin
+        string currentString = stringArray.substring(stringPos, stringPos+3)
+        skillAbilityTypeId[forCounter] = fourchar2int("A"+currentString)
+
+        stringPos += 3
+        forCounter++
+    end))
+
+    forCounter = 0
+    stringPos = 0
+    stringArray = stringAbilityItemIds
+    currentString = ""
+    stringLength = stringArray.length()
+    executeWhile(20, ()->(stringPos < stringLength), () -> (begin
+        currentString = ""
+        while stringArray.charAt(stringPos) != "|" and stringPos < stringArray.length()
+            currentString += stringArray.charAt(stringPos)
+            stringPos ++
+
+        skillToItemId[forCounter] = currentString.toInt()
+        stringPos++
+        forCounter++
+    end))
+
+    print(stringAbilityItemIds)
+    print(stringAbilityTypeIds)
+    print(stringItemItemTypes)
+    print(stringItemTypeIds)
+
+    execute(() -> (createClassObjects() ) )

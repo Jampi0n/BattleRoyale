@@ -1,0 +1,242 @@
+package SkillGeneration
+
+//typeId = object editor code '', Id = custom compile time generated id from 0...n
+
+import AbilityObjEditing
+import ObjectIds
+import HashMap
+import ItemObjEditing
+import ItemGeneration
+
+constant int BUFF_INSTANT_Q = 'B003'
+constant int BUFF_INSTANT_W = 'B002'
+constant int BUFF_INSTANT_E = 'B004'
+constant int BUFF_INSTANT_R = 'B005'
+
+constant int COOLDOWN_Q = 'h00J'
+constant int COOLDOWN_W = 'h00H'
+constant int COOLDOWN_E = 'h00I'
+constant int COOLDOWN_R = 'h00K'
+
+constant int OBJECT_ID_ABILITY_OFFSET = 'AQ00'
+
+
+constant int OBJECT_IDS_PER_INDEX = 4 // 4 skills
+
+public constant int CHANNEL_INSTANT = 0
+public constant int CHANNEL_UNIT_TARGET = 1
+public constant int CHANNEL_POINT_TARGET = 2
+public constant int CHANNEL_UNIT_OR_POINT = 3
+
+//unique id for every skillset
+public int compSkillId = -1
+
+public string compAbilityTypeIds = "" //stores the ability type id
+public string compAbilityItemIds = "" //stores the associated itemId
+
+public function int.getSkillObject() returns SkillObject
+    return SkillObject.idToSkillObject.get(this)
+
+public class SkillObject
+
+    protected int id
+    protected boolean instant
+    protected AbilityDefinition skillQ
+    protected AbilityDefinition skillW
+    protected AbilityDefinition skillE
+    protected AbilityDefinition skillR
+    protected ItemObject itemObject
+
+
+    static constant idToSkillObject = new HashMap<int, SkillObject>()
+
+    construct(int id, boolean instant)
+        this.id = id
+        this.instant = instant
+        idToSkillObject.put(id, this)
+
+        this.itemObject = newItem(ItemType.Skill).getItemObject()
+
+        compAbilityTypeIds += int2fourchar(compItemId*4 + OBJECT_ID_ABILITY_OFFSET).substring(1)
+        compAbilityItemIds += this.itemObject.getId().toString()+"|"
+
+        if instant
+            skillQ = new AbilityDefinitionDemonHunterImmolation(compSkillId*4+OBJECT_ID_ABILITY_OFFSET)
+                ..setBufferManaRequired(1, 0)
+                ..setDamageperInterval(1, 0)
+                ..setManaDrainedperSecond(1, 0)
+                ..setBuffs(1, int2fourchar(BUFF_INSTANT_Q))
+                ..setupAbilityForSkill("Q")
+    
+            skillW = new AbilityDefinitionSeaWitchManaShield(compSkillId*4+OBJECT_ID_ABILITY_OFFSET+1)
+                ..setDamageAbsorbed(1, 0)
+                ..setManaperHitPoint(1, 0)
+                ..setBuffs(1, int2fourchar(BUFF_INSTANT_W))
+                ..setupAbilityForSkill("W")
+      
+            skillE = new AbilityDefinitionBeserk(compSkillId*4+OBJECT_ID_ABILITY_OFFSET+2)
+                ..setAttackSpeedIncrease(1, 0)
+                ..setDamageTakenIncrease(1, 0)
+                ..setBuffs(1, int2fourchar(BUFF_INSTANT_E))
+                ..setupAbilityForSkill("E")
+
+    
+            skillR = new AbilityDefinitionBladeMasterWindWalk(compSkillId*4+OBJECT_ID_ABILITY_OFFSET+3)
+                ..setBackstabDamage(1, false)
+                ..setBackstabDamage1(1, 0)
+                ..setMovementSpeedIncrease(1, 0)
+                ..setTransitionTime(1, -1)
+                ..setEffectSound("")
+                ..setBuffs(1, int2fourchar(BUFF_INSTANT_R))
+                ..setupAbilityForSkill("R")
+    
+        else
+            skillQ = new AbilityDefinitionIllidanChannel(compSkillId*4+OBJECT_ID_ABILITY_OFFSET)
+                ..setArtDuration(1, 0)
+                ..setBaseOrderID(1, "summonquilbeast")
+                ..setDisableOtherAbilities(1, false)
+                ..setFollowThroughTime(1, 0)
+                ..setOptions(1, 1)
+                ..setArtCaster("")
+                ..setArtEffect("")
+                ..setArtTarget("")
+                ..setEffectSound("")
+                ..setBuffs(1, int2fourchar(BUFF_INSTANT_Q))
+                ..setupAbilityForSkill("Q")
+    
+            skillW = new AbilityDefinitionIllidanChannel(compSkillId*4+OBJECT_ID_ABILITY_OFFSET+1)
+                ..setArtDuration(1, 0)
+                ..setBaseOrderID(1, "waterelemental")
+                ..setDisableOtherAbilities(1, false)
+                ..setFollowThroughTime(1, 0)
+                ..setOptions(1, 1)
+                ..setArtCaster("")
+                ..setArtEffect("")
+                ..setArtTarget("")
+                ..setEffectSound("")
+                ..setBuffs(1, int2fourchar(BUFF_INSTANT_W))
+                ..setupAbilityForSkill("W")
+    
+            skillE = new AbilityDefinitionIllidanChannel(compSkillId*4+OBJECT_ID_ABILITY_OFFSET+2)
+                ..setArtDuration(1, 0)
+                ..setBaseOrderID(1, "evileye")
+                ..setDisableOtherAbilities(1, false)
+                ..setFollowThroughTime(1, 0)
+                ..setOptions(1, 1)
+                ..setArtCaster("")
+                ..setArtEffect("")
+                ..setArtTarget("")
+                ..setEffectSound("")
+                ..setBuffs(1, int2fourchar(BUFF_INSTANT_E))
+                ..setupAbilityForSkill("E")
+    
+            skillR = new AbilityDefinitionIllidanChannel(compSkillId*4+OBJECT_ID_ABILITY_OFFSET+3)
+                ..setArtDuration(1, 0)
+                ..setBaseOrderID(1, "resurrection")
+                ..setDisableOtherAbilities(1, false)
+                ..setFollowThroughTime(1, 0)
+                ..setOptions(1, 1)
+                ..setArtCaster("")
+                ..setArtEffect("")
+                ..setArtTarget("")
+                ..setEffectSound("")
+                ..setBuffs(1, int2fourchar(BUFF_INSTANT_R))
+                ..setupAbilityForSkill("R")
+    
+
+    function setAnimationNames(string names)
+        skillQ.setAnimationNames(names)
+        skillW.setAnimationNames(names)
+        skillE.setAnimationNames(names)
+        skillR.setAnimationNames(names)
+
+    function setIcon(string icon)
+        skillQ.presetIcon(icon)
+        skillW.presetIcon(icon)
+        skillE.presetIcon(icon)
+        skillR.presetIcon(icon)
+
+        itemObject.setIcon(icon)
+
+    function setTargetType(int targetType)
+        if instant
+            return
+        else
+            (skillQ castTo AbilityDefinitionIllidanChannel).setTargetType(1, targetType)
+            (skillW castTo AbilityDefinitionIllidanChannel).setTargetType(1, targetType)
+            (skillE castTo AbilityDefinitionIllidanChannel).setTargetType(1, targetType)
+            (skillR castTo AbilityDefinitionIllidanChannel).setTargetType(1, targetType)
+
+    function setRange(real range)
+        skillQ.setCastRange(1, range)
+        skillW.setCastRange(1, range)
+        skillE.setCastRange(1, range)
+        skillR.setCastRange(1, range)
+
+    function setName(string name)
+        skillQ.setTooltipNormal(1, name)
+        skillW.setTooltipNormal(1, name)
+        skillE.setTooltipNormal(1, name)
+        skillR.setTooltipNormal(1, name)
+        itemObject.setName(name)
+
+    function setDescription(string desc)
+        skillQ.setTooltipNormalExtended(1, desc)
+        skillW.setTooltipNormalExtended(1, desc)
+        skillE.setTooltipNormalExtended(1, desc)
+        skillR.setTooltipNormalExtended(1, desc)
+        itemObject.setTooltip(desc)
+
+
+    function setCooldown(real cooldown)
+        skillQ.setCooldown(1, cooldown)
+        skillW.setCooldown(1, cooldown)
+        skillE.setCooldown(1, cooldown)
+        skillR.setCooldown(1, cooldown)
+
+    function setManaCost(int manaCost)
+        skillQ.setManaCost(1, manaCost)
+        skillW.setManaCost(1, manaCost)
+        skillE.setManaCost(1, manaCost)
+        skillR.setManaCost(1, manaCost)
+
+function AbilityDefinition.setupAbilityForSkill(string hotkey)
+    this
+        ..setHeroAbility(false)
+        ..setHotkeyLearn(hotkey)
+        ..setLevels(1)
+
+    if hotkey == "Q"
+        this
+            ..presetButtonPosNormal(0, 2)
+            ..presetButtonPosResearch(0, 2)
+            ..presetButtonPosTurnOff(0, 2)
+            ..setRequirements(int2fourchar(COOLDOWN_Q))
+    else if hotkey == "W"
+        this
+            ..presetButtonPosNormal(1, 2)
+            ..presetButtonPosResearch(1, 2)
+            ..presetButtonPosTurnOff(1, 2)
+            ..setRequirements(int2fourchar(COOLDOWN_W))
+    else if hotkey == "E"
+        this
+            ..presetButtonPosNormal(2, 2)
+            ..presetButtonPosResearch(2, 2)
+            ..presetButtonPosTurnOff(2, 2)
+            ..setRequirements(int2fourchar(COOLDOWN_E))
+    else if hotkey == "R"
+        this
+            ..presetButtonPosNormal(3, 2)
+            ..presetButtonPosResearch(3, 2)
+            ..presetButtonPosTurnOff(3, 2)
+            ..setRequirements(int2fourchar(COOLDOWN_R))
+
+public function newSkill(string name, boolean instant) returns int
+    compSkillId++
+    let skillObject = new SkillObject(compSkillId, instant)
+    skillObject.setName(name)
+
+    return compSkillId
+
+
+

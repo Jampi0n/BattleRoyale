@@ -1,0 +1,17 @@
+package CompiletimeFinalize
+
+import ItemGeneration
+import ItemObjectIds
+import SkillGeneration
+import SkillObjectIds
+
+
+public string stringItemTypeIds = compiletime(compItemTypeIds)
+public string stringAbilityTypeIds = compiletime(compAbilityTypeIds)
+public string stringAbilityItemIds = compiletime(compAbilityItemIds)
+public string stringItemItemTypes = compiletime(compItemItemTypes)
+
+
+public int itemIdCount = compiletime(compItemId+1)
+public int skillIdCount = compiletime(compSkillId+1)
+

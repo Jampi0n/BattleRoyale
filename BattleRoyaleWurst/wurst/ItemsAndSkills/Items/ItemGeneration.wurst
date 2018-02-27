@@ -1,0 +1,112 @@
+package ItemGeneration
+
+//typeId = object editor code '', Id = custom compile time generated id from 0...n
+
+import ItemObjEditing
+import HashMap
+import ObjectIds
+
+public constant int LEARN_SKILL = 'A00B'
+
+constant int OBJECT_ID_ITEM_OFFSET = 'IQ00'
+
+public int compItemId = -1
+public string compItemTypeIds = ""
+public string compItemItemTypes = ""
+
+public enum ItemType
+    Skill
+    Usable
+    Permanent
+
+public function int.getItemObject() returns ItemObject
+    return ItemObject.idToItemObject.get(this)
+
+public class ItemObject
+
+    protected int id
+    protected static constant idToItemObject = new HashMap<int, ItemObject>()
+    protected ItemDefinition worldItem
+    protected ItemDefinition inventoryItem
+
+    construct(int id, ItemType itemType)
+        this.id = id
+        idToItemObject.put(id, this)
+
+        compItemTypeIds += int2fourchar(compItemId*2 + OBJECT_ID_ITEM_OFFSET).substring(1)
+        if itemType == ItemType.Skill
+            compItemItemTypes += "0"
+        else if itemType == ItemType.Usable
+            compItemItemTypes += "1"
+        if itemType == ItemType.Permanent
+            compItemItemTypes += "2"
+
+        this.worldItem = new ItemDefinition(compItemId*2 + OBJECT_ID_ITEM_OFFSET, 'rat6')
+            ..setAbilities("")
+            ..setActivelyUsed(true)
+            ..setUseAutomaticallyWhenAcquired(true)
+            ..setDescription("")
+            ..setModelUsed("Objects\\InventoryItems\\runicobject\\runicobject.mdl")
+            ..setPerishable(true)
+
+        this.inventoryItem = new ItemDefinition(compItemId*2 + OBJECT_ID_ITEM_OFFSET+1, 'rat6')
+            ..setAbilities("")
+            ..setUseAutomaticallyWhenAcquired(false)
+            ..setDescription("")
+
+
+
+        if itemType == ItemType.Skill
+            this.inventoryItem
+                ..setCooldownGroup(int2fourchar(LEARN_SKILL))
+                ..setClassification("Artifact")
+                ..setNumberofCharges(1000)
+                ..setAbilities(int2fourchar(LEARN_SKILL))
+                ..setActivelyUsed(true)
+            this.worldItem
+                ..setNumberofCharges(1000)
+                ..setClassification("PowerUp")
+        else if itemType == ItemType.Usable
+            this.inventoryItem
+                ..setClassification("Charged")
+                ..setNumberofCharges(1000)
+                ..setActivelyUsed(true)
+            this.worldItem
+                ..setNumberofCharges(1000)
+                ..setClassification("Purchasable")
+        else
+            this.inventoryItem
+                ..setClassification("Permanent")
+                ..setNumberofCharges(0)
+                ..setActivelyUsed(false)
+            this.worldItem
+                ..setNumberofCharges(0)
+                ..setClassification("Campaign")
+
+
+    function setName(string name)
+        this.inventoryItem.setName(name)
+        this.worldItem.setName(name)
+
+    function setIcon(string icon)
+        string s = icon
+        if icon.length() < 20 or not icon.startsWith("ReplaceableTextures")
+            s = "ReplaceableTextures\\CommandButtons\\" + s
+        if not icon.endsWith(".blp")
+            s += ".blp"
+        this.inventoryItem.setInterfaceIcon(s)
+        this.worldItem.setInterfaceIcon(s)
+
+    function setTooltip(string text)
+        this.inventoryItem.setTooltipExtended(text)
+        this.worldItem.setTooltipExtended(text)
+
+    function getId() returns int
+        return this.id
+
+public function newItem(ItemType itemType) returns int
+    compItemId++
+    
+    new ItemObject(compItemId, itemType)
+
+    return compItemId

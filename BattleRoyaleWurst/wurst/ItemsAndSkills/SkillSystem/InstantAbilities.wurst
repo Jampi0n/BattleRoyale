@@ -1,0 +1,11 @@
+package InstantAbilities
+
+import ClosureTimers
+
+function onCast()
+    
+
+init
+    CreateTrigger()
+        ..registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
+        ..addAction(function onCast)

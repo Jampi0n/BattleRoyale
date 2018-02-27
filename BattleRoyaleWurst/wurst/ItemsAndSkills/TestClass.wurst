@@ -1,0 +1,34 @@
+package TestClass
+
+import Inventory
+import ItemObjectIds
+import SkillObjectIds
+import ClosureTimers
+import MapBounds
+import RuntimeInitialize
+
+
+function createItemTest(int itemId)
+    //return
+
+    for i = 0 to 2
+        let itm = createItem(Item.convertId(itemId).getWorldItem() , playableCenter.polarOffset(GetRandomDirectionDeg().fromDeg(), GetRandomReal(40, 400)))
+        Item.setItemCharges(itm, 4)
+
+function test()
+    let hero = createUnit(players[0], 'H002', playableCenter, angle(0))
+    new Inventory(hero)
+
+    createItemTest(SKILL_A)
+    createItemTest(SKILL_B)
+    createItemTest(SKILL_C)
+
+    createItemTest(USABLE_A)
+    createItemTest(USABLE_B)
+    createItemTest(USABLE_C)
+
+    createItemTest(PERMA_A)
+    createItemTest(PERMA_B)
+    createItemTest(PERMA_C)
+init
+    doAfter(0.5, () -> test())
