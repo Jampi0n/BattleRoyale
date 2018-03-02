@@ -1,17 +1,26 @@
 package CompiletimeFinalize
 
 import ItemGeneration
-import ItemObjectIds
+import ItemObjectIds //after item object ids has been initialized, we can be sure, that the strings we need are filled.
 import SkillGeneration
-import SkillObjectIds
+import SkillObjectIds //after skill object ids has been initialized, we can be sure, that the strings we need are filled.
 
 
 public string stringItemTypeIds = compiletime(compItemTypeIds)
 public string stringAbilityTypeIds = compiletime(compAbilityTypeIds)
 public string stringAbilityItemIds = compiletime(compAbilityItemIds)
+public string stringAbilityCooldowns = compiletime(compAbilityCooldowns)
+public string stringAbilityInstant = compiletime(compAbilityInstant)
 public string stringItemItemTypes = compiletime(compItemItemTypes)
 
 
 public int itemIdCount = compiletime(compItemId+1)
 public int skillIdCount = compiletime(compSkillId+1)
 
+/*
+ItemObjectIds and SkillObjectIds are imported to ensure correct order of compile time execution.
+This function simply uses two variables of these packages to prevent the annoying warning.
+Neither function nor variables are ever used.
+*/
+function noWarning() returns boolean
+    return initSkills == initItems

@@ -1,11 +1,11 @@
 package TestClass
-
+/*
 import Inventory
 import ItemObjectIds
-import SkillObjectIds
 import ClosureTimers
 import MapBounds
 import RuntimeInitialize
+import SkillInvisibility
 
 
 function createItemTest(int itemId)
@@ -19,9 +19,7 @@ function test()
     let hero = createUnit(players[0], 'H002', playableCenter, angle(0))
     new Inventory(hero)
 
-    createItemTest(SKILL_A)
-    createItemTest(SKILL_B)
-    createItemTest(SKILL_C)
+    createItemTest( Skill.convertId(SKILL_INVISIBILITY).getItem().getId() )
 
     createItemTest(USABLE_A)
     createItemTest(USABLE_B)
@@ -31,4 +29,4 @@ function test()
     createItemTest(PERMA_B)
     createItemTest(PERMA_C)
 init
-    doAfter(0.5, () -> test())
+    doAfter(0.5, () -> test())*/

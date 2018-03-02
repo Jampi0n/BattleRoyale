@@ -104,6 +104,12 @@ public class ItemObject
     function getId() returns int
         return this.id
 
+    function setAbility(string abil)
+        this.inventoryItem
+            ..setAbilities(abil)
+            ..setCooldownGroup(abil)
+
+
 public function newItem(ItemType itemType) returns int
     compItemId++
     

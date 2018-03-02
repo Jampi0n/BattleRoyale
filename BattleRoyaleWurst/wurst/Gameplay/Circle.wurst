@@ -1,0 +1,56 @@
+package Circle
+
+import TimerUtils
+
+public constant ROUND_MESSAGE_DELAY = 10
+
+public timer timerCircleMove = getTimer()
+public timerdialog windowCircleMove = CreateTimerDialog(timerCircleMove)
+public timer timerCircleMessage = getTimer()
+public timerdialog windowCircleMessage = CreateTimerDialog(timerCircleMessage)
+public timer timerRoundStart = getTimer()
+public timerdialog windowRoundStart = CreateTimerDialog(timerRoundStart)
+public timer timerRoundEnd = getTimer()
+public timerdialog windowRoundEnd = CreateTimerDialog(timerRoundEnd)
+
+public int circleCurrentRadius
+public int circleCurrentX
+public int circleCurrentY
+public int circleMoveSpeed = 1
+public int circleFactor = 65
+public int circleRound = 1
+
+
+group unitsOnMap
+boolean moving = FALSE
+
+integer countVM = 0
+integer currentVM = 0
+fogmodifier array arrayVM
+integer currentPlayer
+real currentX
+real currentY
+
+integer circleCount = 0
+integer visionCount = 0
+
+integer c_xStart
+integer c_yStart
+integer c_R
+integer c_y
+integer c_x
+integer c_F
+
+integer c_dE
+integer c_dSE
+integer c_count
+
+
+public function showCircleMessage()
+    print("start circle soon")
+
+public function initCircle()
+    print("inti circle")
+
+public function circleStopMoving()
+    print("stop circle")

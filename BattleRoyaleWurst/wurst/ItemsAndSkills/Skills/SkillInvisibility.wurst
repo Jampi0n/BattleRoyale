@@ -1,0 +1,34 @@
+package SkillInvisibility
+
+import SkillGeneration
+import initlater RuntimeInitialize
+import InstantDummyCaster
+import General
+
+public constant SKILL_INVISIBILITY = compiletime(newSkill("Invisibility", 8, true))
+
+
+
+@compiletime
+public function setupIvisibility()
+    real dur = 4
+    int dummySpellId = compiletime(ABIL_ID_GEN.next())
+
+    if compiletime
+        SKILL_INVISIBILITY.getSkillObject()
+            ..setDescription("Turns the hero invisible for "+dur.toInt().toString()+" seconds.")
+            ..setIcon(Icons.bTNInvisibility)
+            ..setManaCost(0)
+            ..setRange(100)
+            ..setTargetType(CHANNEL_POINT_TARGET)
+
+        new AbilityDefinitionInvisibility(dummySpellId)
+            ..setDurationHero(1, dur)
+            ..setDummySkill()
+    else
+        SKILL_INVISIBILITY.attachCode( (unit caster, unit _target, vec2 _pos) -> (begin
+            InstantDummyCaster.castTarget(caster.getOwner(), dummySpellId, 1, "invisibility", caster)
+            debugPrint("invis")
+        end))
+
+    

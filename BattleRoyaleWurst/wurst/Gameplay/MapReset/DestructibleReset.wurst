@@ -1,0 +1,232 @@
+package DestructibleReset
+
+import Execute
+
+constant objectData = InitHashtable()
+constant saveList = InitHashtable()
+int maxCount = 0
+int currentCount = 0
+
+function isTree(int typeId) returns boolean
+    return objectData.loadBoolean(typeId, 4)
+
+function isSaved(int typeId) returns boolean
+    return objectData.loadBoolean(typeId, 0)
+
+function registerDestructible(int typeId, real minScale, real maxScale, int variations, boolean isTree)
+    objectData
+        ..saveBoolean(typeId, 0, true)
+        ..saveReal(typeId, 1, minScale)
+        ..saveReal(typeId, 2, maxScale)
+        ..saveInt(typeId, 3, variations-1)
+        ..saveBoolean(typeId, 4, isTree)
+
+function saveSingle()
+    let d = GetEnumDestructable()
+    if isSaved(d.getTypeId())
+        saveList
+            ..saveDestructableHandle(maxCount, 0, d)
+            ..saveInt(maxCount, 1, d.getTypeId())
+            ..saveReal(maxCount, 2, d.getX())
+            ..saveReal(maxCount, 3, d.getY())
+            ..saveBoolean(maxCount, 4, GetWidgetLife(d) <=0 )
+        maxCount++
+        
+public function saveAllDestructibles()
+    maxCount = 0
+    EnumDestructablesInRect(bj_mapInitialPlayableArea, null, function saveSingle)
+
+function loadSingle()
+    destructable d = saveList.loadDestructableHandle(currentCount, 0)
+    let x = saveList.loadReal(currentCount, 2)
+    let y = saveList.loadReal(currentCount, 3)
+    real minScale
+    real maxScale
+    real scale
+    int maxVariation
+    int variation
+    int typeId = d.getTypeId()
+
+    if d != null and not isTree(typeId)
+        DestructableRestoreLife(d, GetDestructableMaxLife(d), false)
+        SetDestructableLife(d, GetDestructableMaxLife(d))
+    else
+        minScale = objectData.loadReal(typeId, 1)
+        maxScale = objectData.loadReal(typeId, 2)
+        maxVariation = objectData.loadInt(typeId, 3)
+
+        if minScale == 0
+            minScale = 1
+        if maxScale == 0
+            maxScale = 1
+        if maxVariation == 0
+            maxVariation = 0
+
+        scale = GetRandomReal(minScale, maxScale)
+        variation = GetRandomInt(0, maxVariation)
+
+        d.remove()
+
+        if not saveList.loadBoolean(currentCount, 4)
+            d = CreateDestructable(saveList.loadInt(currentCount, 1), x, y, GetRandomDirectionDeg(), scale, variation)
+        else
+            d = CreateDeadDestructable(saveList.loadInt(currentCount, 1), x, y, GetRandomDirectionDeg(), scale, variation)
+        saveList.saveDestructableHandle(currentCount, 0, d)
+
+        //register item drops
+
+    currentCount++
+    if currentCount <= maxCount
+        if ModuloInteger(currentCount, 100)!=0
+            loadSingle()
+        else
+            execute( ()->loadSingle() )
+            
+
+public function loadAllDestructibles()
+    currentCount = 0
+    loadSingle()
+
+function initDestructibles()
+    //Barrels
+    registerDestructible('LTbx',1.1,1.5,1,false)
+    registerDestructible('LTbs',1.1,1.5,1,false)
+    registerDestructible('LTbr',1.1,1.5,1,false)
+    //Explosive
+    registerDestructible('LTex',1.1,1.5,1,false)
+    //Gates
+    registerDestructible('B00Y',0.7,0.7,1,false)
+    
+    registerDestructible('YTcx',1,1,1,false)
+    registerDestructible('YTce',1,1,1,false)
+    
+    registerDestructible('DTc1',1,1,1,false)
+    registerDestructible('DTc2',1,1,1,false)
+    
+    registerDestructible('ATg1',1,1,1,false)
+    registerDestructible('ATg2',1,1,1,false)
+    registerDestructible('ATg3',1,1,1,false)
+    registerDestructible('ATg4',1,1,1,false)
+    
+    registerDestructible('DTg1',1,1,1,false)
+    registerDestructible('DTg2',1,1,1,false)
+    registerDestructible('DTg3',1,1,1,false)
+    registerDestructible('DTg4',1,1,1,false)
+    
+    registerDestructible('LTe1',1,1,1,false)
+    registerDestructible('LTe2',1,1,1,false)
+    registerDestructible('LTe3',1,1,1,false)
+    registerDestructible('LTe4',1,1,1,false)
+    
+    registerDestructible('ITtg',1,1,1,false)
+    
+    registerDestructible('LTg1',1,1,1,false)
+    registerDestructible('LTg2',1,1,1,false)
+    registerDestructible('LTg3',1,1,1,false)
+    registerDestructible('LTg4',1,1,1,false)
+    
+    registerDestructible('ITx1',1,1,1,false)
+    registerDestructible('ITx2',1,1,1,false)
+    registerDestructible('ITx3',1,1,1,false)
+    registerDestructible('ITx4',1,1,1,false)
+    
+    
+    registerDestructible('DTg5',1,1,1,false)
+    registerDestructible('DTg6',1,1,1,false)
+    registerDestructible('DTg7',1,1,1,false)
+    registerDestructible('DTg8',1,1,1,false)
+    
+    registerDestructible('ZTg1',1,1,1,false)
+    registerDestructible('ZTg2',1,1,1,false)
+    registerDestructible('ZTg3',1,1,1,false)
+    registerDestructible('ZTg4',1,1,1,false)
+    //Debris
+    registerDestructible('IOt0',0.8,1.2,1,false)
+    registerDestructible('IOt1',0.8,1.2,1,false)
+    registerDestructible('IOt2',0.8,1.2,1,false)
+    
+    registerDestructible('ITcr',0.8,1.2,6,false)
+    
+    registerDestructible('DTrc',1,1,6,false)
+    registerDestructible('LTrc',1,1,6,false)
+    //Trees
+    registerDestructible('ATtr',0.8,1.2,5,true)
+    registerDestructible('BTtw',0.8,1.2,10,true)
+    registerDestructible('KTtw',0.65,0.85,10,true)
+    
+    registerDestructible('YTft',0.8,1.2,2,true)
+    registerDestructible('JTct',0.8,1.2,2,true)
+    registerDestructible('YTst',0.8,1.2,2,true)
+    registerDestructible('YTct',0.8,1.2,2,true)
+    registerDestructible('YTwt',0.8,1.2,2,true)
+    
+    registerDestructible('JTtw',0.8,1.2,10,true)
+    registerDestructible('DTsh',0.8,1.2,8,true)
+    registerDestructible('FTtw',0.8,1.2,10,true)
+    registerDestructible('CTtr',0.8,1.2,5,true)
+    
+    registerDestructible('ITtw',0.8,1,10,true)
+    registerDestructible('NTtw',0.8,1.2,10,true)
+    registerDestructible('OTtw',0.65,0.85,10,true)
+    
+    registerDestructible('ZTtw',0.65,1.05,10,true)
+    registerDestructible('WTst',0.8,1.2,10,true)
+    registerDestructible('LTlt',0.8,1.2,10,true)
+    registerDestructible('GTsh',0.8,1.2,8,true)
+    registerDestructible('VTlw',0.8,1.2,10,true)
+    
+    registerDestructible('WTtw',0.8,1.2,10,true)
+    //Canopy
+    registerDestructible('ATtc',0.8,1.2,3,true)
+    registerDestructible('BTtc',0.8,1.2,3,true)
+    registerDestructible('CTtc',0.8,1.2,3,true)
+    registerDestructible('ITtc',0.8,1.2,3,true)
+    registerDestructible('NTtc',0.8,1.2,3,true)
+    registerDestructible('ZTtc',0.8,1.2,3,true)
+    
+    //Big Trees
+    registerDestructible('B000',1.5,1.8,5,true)
+    registerDestructible('B003',1.5,1.8,10,true)
+    registerDestructible('B006',1.5,1.8,8,true)
+    registerDestructible('B005',1.5,1.8,10,true)
+    registerDestructible('B008',1.5,1.8,5,true)
+    registerDestructible('B00B',1.5,1.8,10,true)
+    registerDestructible('B00D',1.5,1.8,10,true)
+    registerDestructible('B00F',1.35,1.65,10,true)
+    registerDestructible('B00W',1.35,1.65,10,true)
+    registerDestructible('B00G',1.5,1.8,10,true)
+    registerDestructible('B00J',1.5,1.8,10,true)
+    registerDestructible('B00K',1.5,1.8,8,true)
+    registerDestructible('B00N',1.5,1.8,10,true)
+    registerDestructible('B00P',1.5,1.8,10,true)
+    //Medium Trees
+    registerDestructible('B001',1.2,1.5,5,true)
+    registerDestructible('B002',1.2,1.5,10,true)
+    registerDestructible('B007',1.2,1.5,8,true)
+    registerDestructible('B004',1.2,1.5,10,true)
+    registerDestructible('B009',1.2,1.5,5,true)
+    registerDestructible('B00A',1.2,1.5,10,true)
+    registerDestructible('B00C',1.2,1.5,10,true)
+    registerDestructible('B00E',1.05,1.35,10,true)
+    registerDestructible('B00X',1.05,1.35,10,true)
+    registerDestructible('B00H',1.2,1.5,10,true)
+    registerDestructible('B00I',1.2,1.5,10,true)
+    registerDestructible('B00L',1.2,1.5,8,true)
+    registerDestructible('B00M',1.2,1.5,10,true)
+    registerDestructible('B00O',1.2,1.5,10,true)
+    //Canopy Big
+    registerDestructible('B00Q',1.2,1.5,3,true)
+    registerDestructible('B00R',1.2,1.5,3,true)
+    registerDestructible('B00S',1.2,1.5,3,true)
+    registerDestructible('B00T',1.2,1.5,3,true)
+    registerDestructible('B00U',1.2,1.5,3,true)
+    registerDestructible('B00V',1.2,1.5,3,true)
+    
+    //Misc
+    registerDestructible('LOcg',0.8,1.2,1,false)
+    registerDestructible('LTcr',0.8,1.2,2,false)
+    /*registerDestructible('ITig',1,1,1,false)
+    registerDestructible('BTrs',1,1,1,false)
+    registerDestructible('BTrx',1,1,1,false)
+    registerDestructible('ITag',1,1,1,false)
+    registerDestructible('Volc',1,1,1,false)*/

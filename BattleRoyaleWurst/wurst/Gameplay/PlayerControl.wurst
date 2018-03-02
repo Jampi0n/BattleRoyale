@@ -1,0 +1,210 @@
+package PlayerControl
+
+import initlater Gameplay
+import Inventory
+
+public unit array playerHero
+public unit array hotkeyHero1
+public unit array hotkeyHero2
+public unit array hotkeyHero3
+
+public fogmodifier array mapVision
+
+int playerCount = 0
+public group playerHeroes = CreateGroup()
+
+public force playerGroup = CreateForce()
+public force observerGroup = CreateForce()
+
+public enum PlayerState
+    EMPTY
+    LEFT
+    ALIVE
+    DEAD
+
+public PlayerState array playerState
+
+public unit blightDummy
+
+real array startX
+real array startY
+int maxLocations = 0
+int totalLocations = 0
+
+//multiboard
+int array rowToPlayer
+int array playerToRow
+
+public function createHeroes()
+    player indexPlayer
+    int locI
+    real temp
+
+    for i = 0 to bj_MAX_PLAYERS-1
+        indexPlayer = Player(i)
+        if playerState[i] != PlayerState.EMPTY and playerState[i] != PlayerState.LEFT //only players who are still playing
+            playerState[i] = PlayerState.ALIVE
+            playerGroup.addPlayer(indexPlayer)
+            observerGroup.removePlayer(indexPlayer)
+
+            locI = GetRandomInt(0, maxLocations - 1)
+
+            if GetLocalPlayer() == indexPlayer
+                PanCameraToTimed(startX[locI], startY[locI], 0)
+            
+            playerHero[i] = CreateUnit(indexPlayer, 'H002', startX[locI], startY[locI], GetRandomReal(0,360))
+            hotkeyHero1[i] = CreateUnit(indexPlayer, 'H00N', startX[locI], startY[locI], 0)
+                ..pause()
+            hotkeyHero2[i] = CreateUnit(indexPlayer, 'H00P', startX[locI], startY[locI], 0)
+                ..pause()
+            hotkeyHero3[i] = CreateUnit(indexPlayer, 'H00R', startX[locI], startY[locI], 0)
+                ..pause()
+
+            UnitModifySkillPoints(playerHero[i], - 1)
+
+            new Inventory(playerHero[i])
+
+            playerHeroes.addUnit(playerHero[i])
+            playerHero[i].pause()
+
+            temp = startX[locI]
+            startX[locI] = startX[maxLocations-1]
+            startX[maxLocations-1] = temp
+
+            temp = startY[locI]
+            startY[locI] = startY[maxLocations-1]
+            startY[maxLocations-1] = temp
+
+            maxLocations--
+        
+        else
+            
+            playerHero[i] = null
+            hotkeyHero1[i] = null
+            hotkeyHero2[i] = null
+            hotkeyHero3[i] = null
+
+    maxLocations = totalLocations
+
+function setupHeroes()
+    group g = CreateGroup()
+    maxLocations = 0
+    GroupEnumUnitsOfPlayer(g, Player(PLAYER_NEUTRAL_PASSIVE) , null)
+    for unit u in g
+        if u.getTypeId() == 'h00L'
+            startX[maxLocations] = R2I(GetUnitX(u))+0.5
+            startY[maxLocations] = R2I(GetUnitY(u))+0.5
+            maxLocations = maxLocations + 1
+            u.remove()
+
+    totalLocations = maxLocations
+    print("locations: "+maxLocations.toString())
+
+    g.destr()
+
+public function initPlayers()
+    player indexPlayer
+    for i = 0 to bj_MAX_PLAYERS-1
+        indexPlayer = Player(i)
+        if GetPlayerSlotState(indexPlayer) == PLAYER_SLOT_STATE_EMPTY
+            playerState[i] = PlayerState.EMPTY
+        else
+            if GetPlayerSlotState(indexPlayer) == PLAYER_SLOT_STATE_LEFT
+                playerState[i] = PlayerState.LEFT
+            else
+                playerState[i] = PlayerState.ALIVE
+                playerCount++
+                rowToPlayer[playerCount] = i
+                playerToRow[i] = playerCount
+
+function onLeave()
+    let p = GetTriggerPlayer()
+    let pId = p.getId()
+
+    playerHero[pId].kill() // will trigger OnDeath
+    playerState[pId] = PlayerState.LEFT
+
+function onDeath()
+
+    let u = GetTriggerUnit()
+    
+    if playerHeroes.contains(u)
+        let p = GetTriggerPlayer()
+        let pId = p.getId()
+        let k = GetKillingUnit()
+        int killer
+
+        if k!= null
+            killer = k.getOwner().getId()
+        else
+            killer = -1
+
+        playerState[pId] = PlayerState.DEAD
+
+        Inventory.getInventory(u).dropAllItems()
+
+        if killer == PLAYER_NEUTRAL_AGGRESSIVE
+            if GetUnitLevel(k) == 10
+                printTimed(p.getName()+" was killed by "+k.getName(), 5)
+            else
+                printTimed(p.getName()+" was killed by a "+k.getName(), 5)
+        else if killer >= 0 and killer < PLAYER_NEUTRAL_AGGRESSIVE
+            printTimed(p.getName()+" was killed by "+Player(killer).getName(), 5)
+        else
+            if k == blightDummy
+                printTimed(p.getName()+" was killed by Blight.", 5)
+            else
+                printTimed(p.getName()+" has died.", 5)
+
+        if killer >= PLAYER_NEUTRAL_AGGRESSIVE
+            killer = -1
+
+        scoreHeroKill(killer, pId)
+        FogModifierStart(mapVision[pId])
+        playerGroup.removePlayer(p)
+        observerGroup.addPlayer(p)
+        playerHeroes.removeUnit(u)
+
+        hotkeyHero1[pId].kill()
+        hotkeyHero2[pId].kill()
+        hotkeyHero3[pId].kill()
+
+        var ret = false
+
+        for i = 0 to bj_MAX_PLAYERS-1
+
+            if playerState[i] == PlayerState.ALIVE
+                if ret
+                    return
+                ret = true
+
+        roundOver()
+        
+
+
+
+function scoreHeroKill(int killer, int victim)
+
+
+
+
+
+
+
+
+function setupPlayers()
+    trigger trg = CreateTrigger()
+    player indexPlayer
+    for i = 0 to bj_MAX_PLAYERS-1
+        indexPlayer = Player(i)
+        trg.registerPlayerEvent(indexPlayer, EVENT_PLAYER_LEAVE)
+        
+    trg.addAction(function onLeave)
+
+    CreateTrigger()
+        ..addAction(function onDeath)
+        ..registerAnyUnitEvent(EVENT_PLAYER_UNIT_DEATH)
+
+init
+    setupPlayers()
+    setupHeroes()

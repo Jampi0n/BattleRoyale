@@ -1,34 +1,19 @@
 package SkillObjectIds
 
-import SkillGeneration
+import public SkillInvisibility
 
-public constant SKILL_A = compiletime(newSkill("A", false))
-public constant SKILL_B = compiletime(newSkill("B", false))
-public constant SKILL_C = compiletime(newSkill("C", false))
+public boolean initSkills = true
+
+public function setupAllSkills()
+    setupIvisibility()
 
 
-@compiletime
-function setupTest()
-    SKILL_A.getSkillObject()
-        ..setDescription("this is A")
-        ..setIcon("BTNSpellStealOn")
-        ..setCooldown(7)
-        ..setManaCost(0)
-        ..setRange(900)
-        ..setTargetType(CHANNEL_POINT_TARGET)
+//import SkillGeneration
 
-    SKILL_B.getSkillObject()
-        ..setDescription("this is B")
-        ..setIcon("BTNRingSkull")
-        ..setCooldown(4)
-        ..setManaCost(0)
-        ..setRange(400)
-        ..setTargetType(CHANNEL_INSTANT)
-
-    SKILL_C.getSkillObject()
-        ..setDescription("this is C")
-        ..setIcon("BTNStaffOfTeleportation")
-        ..setCooldown(3)
-        ..setManaCost(0)
-        ..setRange(400)
-        ..setTargetType(CHANNEL_POINT_TARGET)
+/*
+public constant SKILL_REFLECTOR = compiletime(newSkill("Reflector", true))
+public constant SKILL_SHADOW_STRIKE = compiletime(newSkill("Shadow Strike", true))
+public constant SKILL_SHOCKWAVE = compiletime(newSkill("Shockwave", true))
+public constant SKILL_SPEED_BOOST = compiletime(newSkill("Shadow Strike", true))
+public constant SKILL_STORM_BOLT = compiletime(newSkill("Storm Bolt", true))
+*/

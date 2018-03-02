@@ -5,11 +5,16 @@ import CompiletimeFinalize
 import Execute
 import ObjectIds
 import HashMap
+import SkillObjectIds
+import ErrorHandling
+import General
 
 int array itemTypeId
 int array itemItemType
 int array skillAbilityTypeId
+boolean array skillInstant
 int array skillToItemId
+real array skillCooldown
 
 int forCounter
 int stringPos = 0
@@ -17,18 +22,35 @@ string stringArray = ""
 string currentString = ""
 int stringLength = 0
 
+public interface OnSkillCast
+    function cast(unit caster, unit target, vec2 targetPos)
+
+public function int.attachCode(OnSkillCast onCast)
+    Skill.convertId(this).setOnCast(onCast)
 
 public class Skill
 
     private int skillId
     private int array[4] abilities
     private Item assocItem
+    private boolean instant
     protected static constant idMap = new HashMap<int, Skill>()
     protected static constant typeIdMap = new HashMap<int, Skill>()
     protected static constant hotkeyMap = new HashMap<int, int>()
 
+    private real cooldown
+
+    private static constant onCastTrigger = CreateTrigger()
+    private OnSkillCast onCastFunction
+
+    static function classInit()
+        onCastTrigger
+            ..addAction(function onCastStatic)
+            ..registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
 
     construct(int skillId)
+        this.cooldown = skillCooldown[skillId]
+        this.instant = skillInstant[skillId]
         //======================
         //  connects classes, ids and typeIds
         //======================
@@ -53,22 +75,47 @@ public class Skill
         this.assocItem = Item.convertId(skillToItemId[skillId])
         this.assocItem.assocSkill = this
 
-        print((this.getId()).toString()+" -> "+(this.assocItem.getId()).toString())
+        debugPrint((this.getId()).toString()+" -> "+(this.assocItem.getId()).toString())
 
 
         //======================
 
+    static function onCastStatic()
+        if not Skill.hasTypeId(GetSpellAbilityId())
+            return
+        Skill castedSkill = convertTypeId(GetSpellAbilityId())
+
+        castedSkill.onCastFunction.cast(GetTriggerUnit(), GetSpellTargetUnit(), vec2(GetSpellTargetX(), GetSpellTargetY()) )
+
+    static function hasId(int id) returns boolean
+        return idMap.has(id)
+
+    static function hasTypeId(int typeId) returns boolean
+        return typeIdMap.has(typeId)
+
     static function convertId(int id) returns Skill
-        return idMap.get(id)
+        if hasId(id)
+            return idMap.get(id)
+        else
+            error("Skill.convertId == null")
+            return null
 
     static function convertTypeId(int typeId) returns Skill
-        return typeIdMap.get(typeId)
+        if hasTypeId(typeId)
+            return typeIdMap.get(typeId)
+        else
+            error("Skill.convertTypeId == null")
+            return null
+
+    function setOnCast(OnSkillCast onCast)
+        this.onCastFunction = onCast
+
 
     function getId() returns int
         return this.skillId
 
     function getTypeId() returns int
-        print("here?")
+        debugPrint("here?")
         return this.abilities[0]
 
     static function getHotkey(int abilityTypeId) returns int
@@ -78,7 +125,10 @@ public class Skill
         return this.assocItem
 
     function getCooldown() returns real
-        return 3.
+        return this.cooldown
+
+    function isInstant() returns boolean
+        return this.instant
 
 
 public class Item
@@ -116,15 +166,26 @@ public class Item
             this.itemType = ItemType.Permanent 
         //======================
 
+    static function hasId(int id) returns boolean
+        return idMap.has(id)
+
+    static function hasTypeId(int typeId) returns boolean
+        return typeIdMap.has(typeId)
+
     static function convertId(int id) returns Item
-        return idMap.get(id)
+        if hasId(id)
+            return idMap.get(id)
+        else
+            error("Item.convertId == null")
+            return null
+            
 
     static function convertTypeId(int typeId) returns Item
-        let tmp = typeIdMap.get(typeId)
-        if tmp == null
-            print("cannot convert "+typeId.toString()+" = "+int2fourchar(typeId))
-            createUnit(players[0], 'hfoo', vec2(0,0), angle(0))
-        return tmp
+        if hasTypeId(typeId)
+            return typeIdMap.get(typeId)
+        else
+            error("Item.convertTypeId == null")
+            return null
 
     function getId() returns int
         return this.itemId
@@ -136,16 +197,16 @@ public class Item
         return this.inventoryItem  
         
     function createWorldItem(vec2 pos, int charges) returns item
-        print("create world item")
+        debugPrint("create world item")
         let itm = createItem(worldItem, pos)
         itemChargesMap.put(itm, charges)
         return itm
 
     function getSkill() returns Skill
         if this.assocSkill!=null
-            print((this.getId()).toString()+" -> "+(this.assocSkill.getId()).toString())
+            debugPrint((this.getId()).toString()+" -> "+(this.assocSkill.getId()).toString())
         else
-            print((this.getId()).toString()+" -> "+"null")
+            debugPrint((this.getId()).toString()+" -> "+"null")
         return this.assocSkill
 
     static function getItemCharges(item itm) returns int
@@ -155,8 +216,8 @@ public class Item
         itemChargesMap.put(itm, charges)
 
 function createClassObjects()
-    print(itemIdCount)
-    print(skillIdCount)
+    debugPrint(itemIdCount.toString())
+    debugPrint(skillIdCount.toString())
 
     for i = 0 to itemIdCount-1
         new Item(i)
@@ -165,6 +226,8 @@ function createClassObjects()
         new Skill(i)
 
 init
+    Skill.classInit()
+
     forCounter = 0
     stringPos = 0
     stringArray = stringItemTypeIds
@@ -220,9 +283,40 @@ init
         forCounter++
     end))
 
-    print(stringAbilityItemIds)
-    print(stringAbilityTypeIds)
-    print(stringItemItemTypes)
-    print(stringItemTypeIds)
+    forCounter = 0
+    stringPos = 0
+    stringArray = stringAbilityCooldowns
+    currentString = ""
+    stringLength = stringArray.length()
+    executeWhile(20, ()->(stringPos < stringLength), () -> (begin
+        currentString = ""
+        while stringArray.charAt(stringPos) != "|" and stringPos < stringArray.length()
+            currentString += stringArray.charAt(stringPos)
+            stringPos ++
+
+        skillCooldown[forCounter] = currentString.toReal()
+        stringPos++
+        forCounter++
+    end))
+
+    forCounter = 0
+    stringPos = 0
+    stringArray = stringAbilityInstant
+    currentString = ""
+    stringLength = stringArray.length()
+    executeWhile(20, () -> (stringPos < stringLength) , () -> (begin
+        string currentString = stringArray.charAt(stringPos)
+        skillInstant[forCounter] = (currentString=="1")
+
+        stringPos++
+        forCounter++
+    end))
+
+    debugPrint(stringAbilityItemIds)
+    debugPrint(stringAbilityTypeIds)
+    debugPrint(stringItemItemTypes)
+    debugPrint(stringItemTypeIds)
 
     execute(() -> (createClassObjects() ) )
+
+    execute(() -> (setupAllSkills() ) )

@@ -1,9 +1,31 @@
 package InstantAbilities
 
 import ClosureTimers
+import SkillGeneration
+import RuntimeInitialize
+import General
 
 function onCast()
-    
+    let target = GetSpellAbilityUnit()
+    if not Skill.hasTypeId(GetSpellAbilityId())
+        return
+
+    let skill = Skill.convertTypeId(GetSpellAbilityId())
+    if not skill.isInstant()
+        return
+
+    debugPrint("instant ability used")
+    let hotkey = Skill.getHotkey(GetSpellAbilityId())
+
+    if hotkey == 0
+        doAfter(0, () -> ( target.removeAbility(BUFF_INSTANT_Q) ))
+    else if hotkey == 1
+        doAfter(0, () -> ( target.removeAbility(BUFF_INSTANT_W) ))
+    else if hotkey == 2
+        doAfter(0, () -> ( target.removeAbility(BUFF_INSTANT_E) ))
+    else
+        doAfter(0, () -> ( target.removeAbility(BUFF_INSTANT_R) ))
+        
 
 init
     CreateTrigger()

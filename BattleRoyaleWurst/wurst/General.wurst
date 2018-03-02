@@ -1,4 +1,7 @@
 package General
 
+public constant DEBUG_MODE = false
+
 public function debugPrint(string text)
-    print(text)
+    if DEBUG_MODE
+        print(text)

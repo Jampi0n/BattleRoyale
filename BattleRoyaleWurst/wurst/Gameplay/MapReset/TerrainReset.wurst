@@ -1,0 +1,61 @@
+package TerrainReset
+
+import Execute
+import MapBounds
+
+real minX
+real minY
+real maxX
+real maxY
+constant terrain = InitHashtable()
+real currentX
+real currentY
+int row
+int column
+
+function saveRow()
+    currentX = minX
+    column = 0
+
+    while currentX < maxX
+        terrain.saveInt(row, column, GetTerrainType( currentX, currentY))
+        currentX =  currentX + 64
+        column++
+    
+    currentY = currentY + 64
+    row++
+
+    if currentY < maxY
+        execute( () -> saveRow() )
+    
+public function saveAllTerrain()
+    currentY = minY
+    row = 0
+    execute( () -> saveRow() )
+
+function loadRow()
+    currentX = minX
+    column = 0
+
+    while currentX < maxX
+        SetTerrainType(currentX, currentY, terrain.loadInt(row, column), -1, 1, 1)
+        currentX =  currentX + 64
+        column++
+
+    currentY = currentY + 64
+    row++
+
+    if currentY < maxY
+        execute( () -> loadRow() )
+
+public function loadAllTerrain()
+    currentY = minY
+    row = 0
+    execute( () -> loadRow() )
+
+init
+    minX = boundMin.x
+    minY = boundMin.y
+
+    maxX = boundMax.x
+    maxY = boundMax.y

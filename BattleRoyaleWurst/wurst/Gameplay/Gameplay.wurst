@@ -1,0 +1,160 @@
+package Gameplay
+
+import DestructibleReset
+import UnitReset
+import TerrainReset
+import PlayerControl
+import Circle
+import ClosureTimers
+import Inventory
+
+boolean firstRound = true
+public boolean mapLoading
+
+
+function loadMapState()
+    mapLoading = true
+    loadAllTerrain()
+    loadAllUnits()
+    loadAllDestructibles()
+
+    EnumItemsInRect(bj_mapInitialPlayableArea, null, () -> ( GetEnumItem().remove() ) )
+
+    mapLoading = false
+
+function saveMapState()
+    saveAllTerrain()
+    saveAllUnits()
+    saveAllDestructibles()
+
+//runs at the beginning of the map (0 seconds)
+function gameStarts()
+    print("gameplay.gameStarts")
+
+    saveMapState()
+
+    TimerDialogSetTitle(windowCircleMove, "Circle moves in:")
+    TimerDialogSetTitle(windowCircleMessage, "Next circle position in:")
+    TimerDialogSetTitle(windowRoundStart, "Round starts in:")
+    TimerDialogSetTitle(windowRoundEnd, "Round ends in:")
+
+//runs at the beginning of each round (5 seconds)
+function roundBegins()
+    timerRoundStart.pause()
+    print("gameplay.gameRoundBegins")
+    print("Show ya Fkn SkillZZzz")
+
+    TimerDialogDisplay(windowRoundStart, false)
+    TimerDialogDisplay(windowCircleMessage, true)
+
+    timerCircleMessage.start(ROUND_MESSAGE_DELAY.toReal(), function showCircleMessage)
+
+    ForGroup(playerHeroes, () -> GetEnumUnit().unpause())
+
+//runs at the beginning of each round (0 seconds, after MapLoad)
+function roundStarts()
+    real time
+    if firstRound
+        gameStarts()
+        time = 5
+        firstRound = false
+    else
+        time = 5 //can be increased, if loading takes too long
+
+    print("gameplay.roundStarts")
+
+    initCircle()
+    createHeroes()
+
+    timerRoundStart.start(time, function roundBegins)
+    TimerDialogDisplay(windowRoundStart , true)
+    TimerDialogDisplay(windowRoundEnd , false)
+    TimerDialogDisplay(windowCircleMove , false)
+    TimerDialogDisplay(windowCircleMessage , false)
+
+    FogEnable( true )
+    CinematicFadeBJ( bj_CINEFADETYPE_FADEIN, 2.00, "ReplaceableTextures\\CameraMasks\\White_mask.blp", 0, 0, 0, 0 )
+    EnableUserControl(true)
+
+//runs at the beginning of each round (instant)
+function roundInit()
+    print("Gameplay.roundInit")
+    CinematicFadeBJ( bj_CINEFADETYPE_FADEOUT, 0.00, "ReplaceableTextures\\CameraMasks\\White_mask.blp", 0, 0, 0, 0 )
+    EnableUserControl(false)
+    FogMaskEnable(false)
+    FogEnable(false)
+    real time
+    if not firstRound
+        loadMapState()
+        time = 2
+        CinematicFadeBJ( bj_CINEFADETYPE_FADEOUT, time, "ReplaceableTextures\\CameraMasks\\White_mask.blp", 0, 0, 0, 0 )
+    else
+        time = 0
+
+    doAfter(time, () -> roundStarts())
+
+public function roundEnds()
+    print("Gameplay.roundEnds")
+
+    for i = 0 to bj_MAX_PLAYERS-1
+        FogModifierStop(mapVision[i])
+
+        if playerHero[i] != null
+            destroy Inventory.getInventory(playerHero[i])
+            playerHero[i].remove()
+
+        hotkeyHero1[i].remove()
+        hotkeyHero2[i].remove()
+        hotkeyHero3[i].remove()
+
+    TimerDialogDisplay(windowRoundEnd, false)
+    timerCircleMessage.pause()
+    timerCircleMove.pause()
+    timerRoundEnd.pause()
+    timerRoundStart.pause()
+
+    circleStopMoving()
+
+    SetBlightRect( Player(PLAYER_NEUTRAL_AGGRESSIVE), GetWorldBounds(), false )
+
+    doAfter(0, () -> roundInit() )
+
+//last hero died
+public function roundOver()
+
+    timerCircleMessage.pause()
+    timerCircleMove.pause()
+    timerRoundStart.pause()
+
+    timerRoundEnd.start(5, function roundEnds)
+
+    TimerDialogDisplay(windowRoundEnd , true)
+    TimerDialogDisplay(windowCircleMove , false)
+    TimerDialogDisplay(windowCircleMessage , false)
+
+
+//runs after SaveMapStatus
+function mapConfig()
+    for i = 0 to bj_MAX_PLAYERS-1
+        mapVision[i] = CreateFogModifierRect(Player(i), FOG_OF_WAR_VISIBLE, bj_mapInitialPlayableArea, true, false)
+
+    initPlayers()
+    blightDummy = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE), 'h00S', 0, 0, 0)
+
+//runs at the beginning of the map (loadingscreen)
+function onMapInit()
+    group g = CreateGroup()
+    SetCreepCampFilterState( false )
+    SetAllyColorFilterState(0)
+    EnableMinimapFilterButtons( false, false )
+    GroupEnumUnitsOfPlayer(g, Player(PLAYER_NEUTRAL_PASSIVE), null)
+    for unit u in g
+        if u.isType(UNIT_TYPE_STRUCTURE)
+            u.removeAbility('Amov')
+
+    g.destr()
+    mapConfig()
+    roundInit()
+
+init
+    onMapInit()

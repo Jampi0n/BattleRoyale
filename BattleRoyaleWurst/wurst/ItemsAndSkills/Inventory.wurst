@@ -2,13 +2,14 @@ package Inventory
 
 import RuntimeInitialize
 import MapBounds
-import SkillGeneration
 import ItemGeneration
+import ItemObjectIds
 import General
 import ClosureTimers
 import HashMap
 import BonusMod
 import ObjectIds
+import ErrorHandling
 
 boolean loading = false
 boolean noDrop = false
@@ -51,10 +52,22 @@ function isDrop() returns boolean
     return not noDrop
 
 function unit.addPermanentEffect(int itemTypeId)
-    //print("+ perma")
+    if not Item.hasTypeId(itemTypeId)
+        return
+
+    let itm = Item.convertTypeId(itemTypeId)
+
+    if itm.getId() == PERMA_A
+        this.addBonus(Stat.HP, 50)
 
 function unit.removePermanentEffect(int itemTypeId)
-    //print("- perma")
+    if not Item.hasTypeId(itemTypeId)
+        return
+
+    let itm = Item.convertTypeId(itemTypeId)
+
+    if itm.getId() == PERMA_A
+        this.addBonus(Stat.HP, -50)
 
 function item.removeItemNoDrop()
     noDrop=true
@@ -82,8 +95,13 @@ public class Inventory
 
         for i=0 to 3
             activeSkills[i] = null
+        for i=0 to MAX_PAGE*6 -1
+            items[i] = null
 
         this.saveCurrentPage()
+
+    ondestroy
+        unitToInventory.remove(this.assocUnit)
 
     function saveCurrentPage()
         
@@ -149,7 +167,7 @@ public class Inventory
             if isDummySkillItem(itemTypeId)
                 itm.remove()
             else
-                itm.setVisible(true)
+                itm.setVisible(false)
 
         for i = 0 to 5
             let itm = this.items[this.currentPage*6+i]
@@ -157,7 +175,7 @@ public class Inventory
                 //to place items at the correct slot
                 this.assocUnit.addItem('phlt')
             else
-                print("item in slot "+i.toString())
+                debugPrint("item in slot "+i.toString())
                 itm.setVisible(true)
                 UnitAddItem(this.assocUnit, itm)
     
@@ -167,7 +185,7 @@ public class Inventory
                 itm.remove()
 
         loading = false
-        print("loaded page, now save it")
+        debugPrint("loaded page, now save it")
         this.saveCurrentPageNext()
 
 
@@ -187,7 +205,7 @@ public class Inventory
         return -1
 
     function removeSlotAll(int slot) returns int
-        print("remove slot all")
+        debugPrint("remove slot all")
         let itm = this.assocUnit.itemInSlot(slot)
         if itm == null
             return -2
@@ -251,7 +269,7 @@ public class Inventory
             this.items[slot] = null
         else //update charges
             ret = 1
-            print("update charges: "+newCharges.toString())
+            debugPrint("update charges: "+newCharges.toString())
             SetItemCharges(itm, newCharges)
 
         saveCurrentPageNext()
@@ -281,27 +299,27 @@ public class Inventory
                 slot = this.findFirstEmptySlot(page*6, page*6+5)
                 if slot==-1 or page==-1
                     Item.convertTypeId(itemTypeId).createWorldItem(this.assocUnit.getPos(), charges)
-                    print("1 inventory full")
+                    debugPrint("1 inventory full")
                     return -1
                 else
-                    print("1 create new item -> "+slot.toString())
+                    debugPrint("1 create new item -> "+slot.toString())
                     item itm = createItem(itemTypeId, this.assocUnit.getPos())
                         ..setVisible(false)
                     SetItemCharges(itm, charges)
                     this.items[slot]=itm
                     this.loadCurrentPage()
             else
-                print("1 change charges"+slot.toString())
+                debugPrint("1 change charges"+slot.toString())
                 item itm = items[slot]
                 SetItemCharges(itm, GetItemCharges(itm) + charges)
         else
             slot = this.findFirstEmptySlot(12, 17)
             if slot == -1
                 Item.convertTypeId(itemTypeId).createWorldItem(this.assocUnit.getPos(), charges)
-                print("2 inventory full")
+                debugPrint("2 inventory full")
                 return -1
             else
-                print("2 create new item"+slot.toString())
+                debugPrint("2 create new item"+slot.toString())
                 item itm = createItem(itemTypeId, this.assocUnit.getPos())
                     ..setVisible(false)
                 this.assocUnit.addPermanentEffect(itemTypeId)
@@ -328,12 +346,12 @@ public class Inventory
         int itemTypeId = this.assocUnit.itemInSlot(slot).getTypeId()
         int abilityTypeId
 
-        print("Item:"+(Item.convertTypeId(itemTypeId) == null).toString())
+        debugPrint("Item:"+(Item.convertTypeId(itemTypeId) == null).toString())
 
 
         Skill newSkill = Item.convertTypeId(itemTypeId).getSkill()
 
-        print("Skill:"+(newSkill == null).toString())
+        debugPrint("Skill:"+(newSkill == null).toString())
 
         for i=0 to 3
             abilityTypeId = newSkill.getTypeId()+i
@@ -347,7 +365,7 @@ public class Inventory
 
         abilityTypeId =  newSkill.getTypeId()+slot
 
-        print("learn ability "+int2fourchar(abilityTypeId))
+        debugPrint("learn ability "+int2fourchar(abilityTypeId))
 
         this.removeDummySkillFromSlot(slot)
         this.assocUnit.addAbility(abilityTypeId)
@@ -378,7 +396,7 @@ public class Inventory
             if charges0 > charges1
                 if i<=3
                     this.learnSkillFromItem(i)
-                    printTimedToPlayer("Learn Please!", 5, this.assocUnit.getOwner())
+                    debugPrint("Learn Please!")
                 else
                     printTimedToPlayer("You cannot learn items in these slots!", 5, this.assocUnit.getOwner())
 
@@ -422,19 +440,19 @@ public class Inventory
         int page = -1
         itemtype itemClass
         Inventory triggerInventory = unitToInventory.get(triggerUnit)
-        print("on item pick up: "+itm.getName()+" "+itm.getHandleId().toString())
+        debugPrint("on item pick up: "+itm.getName()+" "+itm.getHandleId().toString())
 
         if triggerInventory == null
             return
-        print("not null")
+        debugPrint("not null")
         if isDummySkillItem(itemTypeId)
             return
-        print("not a dummy item")
+        debugPrint("not a dummy item")
         if isNoPowerUp()
-            print("inventory item")
+            debugPrint("inventory item")
             triggerInventory.saveCurrentPageNext()
         else
-            print("world item")
+            debugPrint("world item")
             itemClass = GetItemType(itm)
             if itemClass == ITEM_TYPE_POWERUP
                 page = 0
@@ -444,6 +462,7 @@ public class Inventory
                 page = 2
 
             triggerInventory.addItemType(itemTypeId+1, Item.getItemCharges(itm), page)
+            itm.remove()
 
     protected static function onItemDrop()
         let itm = GetManipulatedItem()
@@ -453,14 +472,14 @@ public class Inventory
         if triggerInventory == null
             return
         
-        print("loading "+loading.toString())
+        debugPrint("loading "+loading.toString())
         
-        print("on item drop: "+itm.getName()+" "+itm.getHandleId().toString())
+        debugPrint("on item drop: "+itm.getName()+" "+itm.getHandleId().toString())
 
         triggerInventory.saveCurrentPageNext()
         if isNoPowerUp()
             doAfter(0, () -> (begin
-                print("on item drop, create world item: "+itm.getName()+ " charges = "+GetItemCharges(itm).toString())
+                debugPrint("on item drop, create world item: "+itm.getName()+ " charges = "+GetItemCharges(itm).toString())
                 Item.convertTypeId(itemTypeId).createWorldItem(itm.getPos(), GetItemCharges(itm))
                 itm.remove()
             end))
@@ -534,6 +553,12 @@ public class Inventory
             this.addDummySkillToSlot(Skill.getHotkey(abilityTypeId))
         end))
 
+    static function getInventory(unit u) returns Inventory
+        if unitToInventory.has(u)
+            return unitToInventory.get(u)
+        else
+            error("This unit has no inventory!")
+            return null
 
 
 function unit.addDummyObjects()

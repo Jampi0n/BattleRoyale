@@ -1,0 +1,52 @@
+package UnitReset
+
+import Execute
+
+int maxCount
+int currentCount
+constant saveList = InitHashtable()
+
+function isSaved(unit u) returns boolean
+    return u.getOwner() == Player(PLAYER_NEUTRAL_AGGRESSIVE)
+
+function saveSingle()
+    let u = GetEnumUnit()
+    if isSaved(u)
+        saveList
+            ..saveUnitHandle(maxCount, 0, u)
+            ..saveInt(maxCount, 1, u.getTypeId())
+            ..saveReal(maxCount, 2, u.getX())
+            ..saveReal(maxCount, 3, u.getY())
+            ..saveReal(maxCount, 4, u.getFacing())
+            ..saveInt(maxCount, 5, u.getOwner().getId())
+        maxCount++
+
+public function saveAllUnits()
+    group g = CreateGroup()
+    maxCount = 0
+    GroupEnumUnitsInRect(g, bj_mapInitialPlayableArea, null)
+    ForGroup(g, function saveSingle)
+    g.destr()
+
+function loadSingle()
+    unit u = saveList.loadUnitHandle(currentCount, 0)
+    real x = saveList.loadReal(currentCount, 2)
+    real y = saveList.loadReal(currentCount, 3)
+    real facing = saveList.loadReal(currentCount, 4)
+    int typeId = saveList.loadInt(currentCount, 1)
+    int playerId = saveList.loadInt(currentCount, 5)
+
+    u.remove()
+    u = createUnit(Player(playerId), typeId, vec2(x, y), facing.fromDeg())
+    saveList.saveUnitHandle(currentCount, 0, u)
+
+    currentCount++
+    if currentCount <= maxCount
+        if ModuloInteger(currentCount, 100) != 0
+            loadSingle()
+        else
+            execute( () -> loadSingle())
+
+public function loadAllUnits()
+    currentCount = 0
+    loadSingle()

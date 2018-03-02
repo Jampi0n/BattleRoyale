@@ -2,16 +2,17 @@ package SkillGeneration
 
 //typeId = object editor code '', Id = custom compile time generated id from 0...n
 
-import AbilityObjEditing
+import public AbilityObjEditing
 import ObjectIds
 import HashMap
-import ItemObjEditing
 import ItemGeneration
+import public Assets
+import public ObjectIdGenerator
 
-constant int BUFF_INSTANT_Q = 'B003'
-constant int BUFF_INSTANT_W = 'B002'
-constant int BUFF_INSTANT_E = 'B004'
-constant int BUFF_INSTANT_R = 'B005'
+public constant int BUFF_INSTANT_Q = 'B003'
+public constant int BUFF_INSTANT_W = 'B002'
+public constant int BUFF_INSTANT_E = 'B004'
+public constant int BUFF_INSTANT_R = 'B005'
 
 constant int COOLDOWN_Q = 'h00J'
 constant int COOLDOWN_W = 'h00H'
@@ -33,6 +34,8 @@ public int compSkillId = -1
 
 public string compAbilityTypeIds = "" //stores the ability type id
 public string compAbilityItemIds = "" //stores the associated itemId
+public string compAbilityCooldowns = ""
+public string compAbilityInstant = ""
 
 public function int.getSkillObject() returns SkillObject
     return SkillObject.idToSkillObject.get(this)
@@ -50,15 +53,17 @@ public class SkillObject
 
     static constant idToSkillObject = new HashMap<int, SkillObject>()
 
-    construct(int id, boolean instant)
+    construct(int id, real cooldown, boolean instant)
         this.id = id
         this.instant = instant
         idToSkillObject.put(id, this)
 
         this.itemObject = newItem(ItemType.Skill).getItemObject()
 
-        compAbilityTypeIds += int2fourchar(compItemId*4 + OBJECT_ID_ABILITY_OFFSET).substring(1)
+        compAbilityTypeIds += int2fourchar(compSkillId*4 + OBJECT_ID_ABILITY_OFFSET).substring(1)
         compAbilityItemIds += this.itemObject.getId().toString()+"|"
+        compAbilityCooldowns += cooldown.toString()+"|"
+        compAbilityInstant += instant?"1":"0"
 
         if instant
             skillQ = new AbilityDefinitionDemonHunterImmolation(compSkillId*4+OBJECT_ID_ABILITY_OFFSET)
@@ -67,18 +72,21 @@ public class SkillObject
                 ..setManaDrainedperSecond(1, 0)
                 ..setBuffs(1, int2fourchar(BUFF_INSTANT_Q))
                 ..setupAbilityForSkill("Q")
+                ..setCooldown(1, cooldown)
     
             skillW = new AbilityDefinitionSeaWitchManaShield(compSkillId*4+OBJECT_ID_ABILITY_OFFSET+1)
                 ..setDamageAbsorbed(1, 0)
                 ..setManaperHitPoint(1, 0)
                 ..setBuffs(1, int2fourchar(BUFF_INSTANT_W))
                 ..setupAbilityForSkill("W")
+                ..setCooldown(1, cooldown)
       
             skillE = new AbilityDefinitionBeserk(compSkillId*4+OBJECT_ID_ABILITY_OFFSET+2)
                 ..setAttackSpeedIncrease(1, 0)
                 ..setDamageTakenIncrease(1, 0)
                 ..setBuffs(1, int2fourchar(BUFF_INSTANT_E))
                 ..setupAbilityForSkill("E")
+                ..setCooldown(1, cooldown)
 
     
             skillR = new AbilityDefinitionBladeMasterWindWalk(compSkillId*4+OBJECT_ID_ABILITY_OFFSET+3)
@@ -89,6 +97,7 @@ public class SkillObject
                 ..setEffectSound("")
                 ..setBuffs(1, int2fourchar(BUFF_INSTANT_R))
                 ..setupAbilityForSkill("R")
+                ..setCooldown(1, cooldown)
     
         else
             skillQ = new AbilityDefinitionIllidanChannel(compSkillId*4+OBJECT_ID_ABILITY_OFFSET)
@@ -103,6 +112,7 @@ public class SkillObject
                 ..setEffectSound("")
                 ..setBuffs(1, int2fourchar(BUFF_INSTANT_Q))
                 ..setupAbilityForSkill("Q")
+                ..setCooldown(1, cooldown)
     
             skillW = new AbilityDefinitionIllidanChannel(compSkillId*4+OBJECT_ID_ABILITY_OFFSET+1)
                 ..setArtDuration(1, 0)
@@ -116,6 +126,7 @@ public class SkillObject
                 ..setEffectSound("")
                 ..setBuffs(1, int2fourchar(BUFF_INSTANT_W))
                 ..setupAbilityForSkill("W")
+                ..setCooldown(1, cooldown)
     
             skillE = new AbilityDefinitionIllidanChannel(compSkillId*4+OBJECT_ID_ABILITY_OFFSET+2)
                 ..setArtDuration(1, 0)
@@ -129,6 +140,7 @@ public class SkillObject
                 ..setEffectSound("")
                 ..setBuffs(1, int2fourchar(BUFF_INSTANT_E))
                 ..setupAbilityForSkill("E")
+                ..setCooldown(1, cooldown)
     
             skillR = new AbilityDefinitionIllidanChannel(compSkillId*4+OBJECT_ID_ABILITY_OFFSET+3)
                 ..setArtDuration(1, 0)
@@ -142,6 +154,7 @@ public class SkillObject
                 ..setEffectSound("")
                 ..setBuffs(1, int2fourchar(BUFF_INSTANT_R))
                 ..setupAbilityForSkill("R")
+                ..setCooldown(1, cooldown)
     
 
     function setAnimationNames(string names)
@@ -188,11 +201,11 @@ public class SkillObject
         itemObject.setTooltip(desc)
 
 
-    function setCooldown(real cooldown)
+    /*function setCooldown(real cooldown)
         skillQ.setCooldown(1, cooldown)
         skillW.setCooldown(1, cooldown)
         skillE.setCooldown(1, cooldown)
-        skillR.setCooldown(1, cooldown)
+        skillR.setCooldown(1, cooldown)*/
 
     function setManaCost(int manaCost)
         skillQ.setManaCost(1, manaCost)
@@ -203,7 +216,7 @@ public class SkillObject
 function AbilityDefinition.setupAbilityForSkill(string hotkey)
     this
         ..setHeroAbility(false)
-        ..setHotkeyLearn(hotkey)
+        ..setHotkeyNormal(hotkey)
         ..setLevels(1)
 
     if hotkey == "Q"
@@ -231,12 +244,20 @@ function AbilityDefinition.setupAbilityForSkill(string hotkey)
             ..presetButtonPosTurnOff(3, 2)
             ..setRequirements(int2fourchar(COOLDOWN_R))
 
-public function newSkill(string name, boolean instant) returns int
+public function newSkill(string name, real cooldown, boolean instant) returns int
     compSkillId++
-    let skillObject = new SkillObject(compSkillId, instant)
+    let skillObject = new SkillObject(compSkillId, cooldown, instant)
     skillObject.setName(name)
 
     return compSkillId
 
 
+
+public function AbilityDefinition.setDummySkill()
+    this
+        ..setCooldown(1, 0)
+        ..setCastRange(1, 92083)
+        ..setManaCost(1, 0)
+        ..setTargetsAllowed(1, "air,enemies,friend,ground,invulnerable,structure,vulnerable,ward")
+        ..setRequirements("")
 

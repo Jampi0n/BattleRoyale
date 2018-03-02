@@ -1,6 +1,7 @@
 package BonusMod
 
 import AbilityObjEditing
+import General
 
 /*
 This system is based on Bonus Mod by
@@ -117,6 +118,7 @@ public function unit.getBonus(Stat whichStat) returns int
     return amount
 
 public function unit.addBonus(Stat whichStat, int bonus)
+    debugPrint("bonus = "+bonus.toString())
     this.setBonus(whichStat, this.getBonus(whichStat)+bonus)
 
         

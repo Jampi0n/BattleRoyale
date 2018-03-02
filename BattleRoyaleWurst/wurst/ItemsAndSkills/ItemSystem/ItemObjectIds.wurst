@@ -1,7 +1,8 @@
 package ItemObjectIds
 
 import ItemGeneration
-import SkillObjectIds
+
+public boolean initItems = true
 
 public constant USABLE_A = compiletime(newItem(ItemType.Usable))
 public constant USABLE_B = compiletime(newItem(ItemType.Usable))
