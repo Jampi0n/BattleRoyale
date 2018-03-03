@@ -2,6 +2,7 @@ package PlayerControl
 
 import initlater Gameplay
 import Inventory
+import ClosureTimers
 
 public unit array playerHero
 public unit array hotkeyHero1
@@ -22,6 +23,18 @@ public enum PlayerState
     ALIVE
     DEAD
 
+public function PlayerState.toString() returns string
+    if this == PlayerState.EMPTY
+        return "empty"
+    else if this == PlayerState.LEFT
+        return "left"
+    else if this == PlayerState.ALIVE
+        return "alive"
+    else if this == PlayerState.DEAD
+        return "dead"
+    else
+        return "unnkown"
+
 public PlayerState array playerState
 
 public unit blightDummy
@@ -36,6 +49,17 @@ boolean disableSelectionDetection = false
 //multiboard
 int array rowToPlayer
 int array playerToRow
+
+multiboard scoreBoardBig
+multiboard scoreBoardSmall
+
+int array scoreDeaths
+int array scoreHeroKills
+int array scoreBossKills
+int array scoreUnitKills
+
+int array scoreSurvivedTime
+int array scoreScore
 
 public function createHeroes()
     player indexPlayer
@@ -100,7 +124,6 @@ function setupHeroes()
             u.remove()
 
     totalLocations = maxLocations
-    print("locations: "+maxLocations.toString())
 
     g.destr()
 
@@ -130,7 +153,7 @@ function onDeath()
 
     let u = GetTriggerUnit()
     
-    if playerHeroes.contains(u)
+    if playerHeroes.contains(u) // hero kill
         let p = GetTriggerPlayer()
         let pId = p.getId()
         let k = GetKillingUnit()
@@ -181,12 +204,248 @@ function onDeath()
                 ret = true
 
         roundOver()
+
+    else
+        if u.getOwner() == Player(PLAYER_NEUTRAL_AGGRESSIVE)
+            int killer = GetKillingUnit().getOwner().getId()
+            if killer >= bj_MAX_PLAYERS
+                return
+            if GetUnitLevel(u) == 10
+                scoreBossKill(killer)
+            else
+                scoreUnitKill(killer)
+        
+function getPlayerIdColorString(int pId) returns string
+    return fromPlayer(Player(pId)).toColorString()
+
+function seconds2Time(int time) returns string
+    int remainingTime
+    int hours
+    int minutes
+    int seconds
+    string output = ""
+
+    remainingTime = time
+    hours = (remainingTime/3600).toInt()
+    remainingTime = remainingTime - 3600*hours
+    minutes = (remainingTime/60).toInt()
+    remainingTime = remainingTime -60*minutes
+    seconds = remainingTime
+    if(hours!=0)
+        output = output + I2S(hours)+":"
+        if(minutes>9)
+            output = output + I2S(minutes)+":"
+            if(seconds>9)
+                output = output + I2S(seconds)
+            else
+                output = output + "0" + I2S(seconds)
+
+        else
+            output = output + "0" + I2S(minutes)+":"
+            if(seconds>9) 
+                output = output + I2S(seconds)
+            else
+                output = output + "0" + I2S(seconds)
+            
+        
+    else if(minutes!=0) 
+        output = output + I2S(minutes)+":"
+        if(seconds>9) 
+            output = output + I2S(seconds)
+        else
+            output = output + "0" + I2S(seconds)
+        
+    else
+        output = output + I2S(seconds)
+    
+    
+    return output
+
+function updateBoard()
+
+    multiboarditem mbitem
+    for i = 1 to playerCount
+        
+        mbitem = MultiboardGetItem(scoreBoardBig, i, 0)
+        MultiboardSetItemValue(mbitem, getPlayerIdColorString(rowToPlayer[i])+i.toString()+". "+ Player(rowToPlayer[i]).getName()+"|r")
+        MultiboardReleaseItem(mbitem)
+        
+        mbitem = MultiboardGetItem(scoreBoardSmall, i, 0)
+        MultiboardSetItemValue(mbitem, getPlayerIdColorString(rowToPlayer[i])+i.toString()+". "+ Player(rowToPlayer[i]).getName()+"|r")
+        MultiboardReleaseItem(mbitem)
+        
+        mbitem = MultiboardGetItem(scoreBoardBig, i, 1)
+        MultiboardSetItemValue(mbitem, playerState[rowToPlayer[i]].toString() )
+        MultiboardReleaseItem(mbitem)
+        
+        mbitem = MultiboardGetItem(scoreBoardBig, i, 2)
+        MultiboardSetItemValue(mbitem, I2S(scoreUnitKills[rowToPlayer[i]]))
+        MultiboardReleaseItem(mbitem)
+        
+        mbitem = MultiboardGetItem(scoreBoardBig, i, 3)
+        MultiboardSetItemValue(mbitem, I2S(scoreBossKills[rowToPlayer[i]]))
+        MultiboardReleaseItem(mbitem)
+        
+        mbitem = MultiboardGetItem(scoreBoardBig, i, 4)
+        MultiboardSetItemValue(mbitem, I2S(scoreHeroKills[rowToPlayer[i]]))
+        MultiboardReleaseItem(mbitem)
+        
+        mbitem = MultiboardGetItem(scoreBoardBig, i, 5)
+        MultiboardSetItemValue(mbitem, seconds2Time(scoreSurvivedTime[rowToPlayer[i]]))
+        MultiboardReleaseItem(mbitem)
+        
+        mbitem = MultiboardGetItem(scoreBoardBig, i, 6)
+        MultiboardSetItemValue(mbitem, I2S(scoreScore[rowToPlayer[i]]))
+        MultiboardReleaseItem(mbitem)
+        
+        mbitem = MultiboardGetItem(scoreBoardSmall, i, 1)
+        MultiboardSetItemValue(mbitem, I2S(scoreScore[rowToPlayer[i]]))
+        MultiboardReleaseItem(mbitem)
         
 
+function updateScore(int pId, boolean increase)
+    int row = playerToRow[pId]
+    int nextRow
+    int tmp
+    if increase
+        while true
+            nextRow = row - 1
+            if nextRow < 1 or scoreScore[rowToPlayer[nextRow]] >= scoreScore[rowToPlayer[row]]
+                break
+            tmp = rowToPlayer[row]
+            rowToPlayer[row] = rowToPlayer[nextRow]
+            rowToPlayer[nextRow] = tmp
 
+            playerToRow[rowToPlayer[row]] = row
+            playerToRow[rowToPlayer[nextRow]] = row
+
+            row = nextRow
+    else
+        while true
+            nextRow = row + 1
+            if nextRow > playerCount or scoreScore[rowToPlayer[nextRow]] <= scoreScore[rowToPlayer[row]]
+                break
+            tmp = rowToPlayer[row]
+            rowToPlayer[row] = rowToPlayer[nextRow]
+            rowToPlayer[nextRow] = tmp
+
+            playerToRow[rowToPlayer[row]] = row
+            playerToRow[rowToPlayer[nextRow]] = row
+
+            row = nextRow
+
+    updateBoard()
 
 function scoreHeroKill(int killer, int victim)
+    scoreDeaths[victim]++
+    if killer == victim or killer == -1
+        return
 
+    scoreHeroKills[killer]++
+    scoreScore[killer] += 100
+    updateScore(killer, true)
+
+function scoreBossKill(int killer)
+    scoreBossKills[killer]++
+    scoreScore[killer] += 50
+    updateScore(killer, true)
+
+function scoreUnitKill(int killer)
+    scoreUnitKills[killer]++
+    scoreScore[killer] += 5
+    updateScore(killer, true)
+
+function initMultiboard()
+    multiboarditem mbitem
+
+    scoreBoardBig = CreateMultiboard()
+        ..setRowCount(playerCount+1)
+        ..setColumnCount(7)
+        ..setTitle("Score")
+    MultiboardSetItemStyleBJ( scoreBoardBig, 0, 0, true, false )
+
+    MultiboardSetItemWidthBJ(scoreBoardBig,1,0,8)
+    MultiboardSetItemWidthBJ(scoreBoardBig,2,0,4)
+    MultiboardSetItemWidthBJ(scoreBoardBig,3,0,2)
+    MultiboardSetItemWidthBJ(scoreBoardBig,4,0,2)
+    MultiboardSetItemWidthBJ(scoreBoardBig,5,0,2)
+    MultiboardSetItemWidthBJ(scoreBoardBig,6,0,4)
+    MultiboardSetItemWidthBJ(scoreBoardBig,7,0,3)
+
+    mbitem = MultiboardGetItem(scoreBoardBig, 0, 0)
+    MultiboardSetItemValue(mbitem, "Player")
+    MultiboardReleaseItem(mbitem)
+
+    mbitem = MultiboardGetItem(scoreBoardBig, 0, 1)
+    MultiboardSetItemValue(mbitem, "Status")
+    MultiboardReleaseItem(mbitem)
+    
+    mbitem = MultiboardGetItem(scoreBoardBig, 0, 2)
+    MultiboardSetItemValue(mbitem, "U")
+    MultiboardSetItemStyle(mbitem, false, true)
+    MultiboardSetItemIcon(mbitem,"ReplaceableTextures\\CommandButtons\\BTNSteelMelee.blp")
+    MultiboardReleaseItem(mbitem)
+    
+    mbitem = MultiboardGetItem(scoreBoardBig, 0, 3)
+    MultiboardSetItemValue(mbitem, "B")
+    MultiboardSetItemStyle(mbitem, false, true)
+    MultiboardSetItemIcon(mbitem,"ReplaceableTextures\\CommandButtons\\BTNBash.blp")
+    MultiboardReleaseItem(mbitem)
+    
+    mbitem = MultiboardGetItem(scoreBoardBig, 0, 4)
+    MultiboardSetItemValue(mbitem, "H")
+    MultiboardSetItemStyle(mbitem, false, true)
+    MultiboardSetItemIcon(mbitem,"ReplaceableTextures\\CommandButtons\\BTNStormBolt.blp")
+    MultiboardReleaseItem(mbitem)
+    
+    mbitem = MultiboardGetItem(scoreBoardBig, 0, 5)
+    MultiboardSetItemValue(mbitem, "T")
+    MultiboardSetItemStyle(mbitem, false, true)
+    MultiboardSetItemIcon(mbitem,"ReplaceableTextures\\CommandButtons\\BTNEngineeringUpgrade.blp")
+    MultiboardReleaseItem(mbitem)
+    
+    mbitem = MultiboardGetItem(scoreBoardBig, 0, 6)
+    MultiboardSetItemValue(mbitem, "S")
+    MultiboardSetItemStyle(mbitem, false, true)
+    MultiboardSetItemIcon(mbitem,"ReplaceableTextures\\CommandButtons\\BTNChestOfGold.blp")
+    MultiboardReleaseItem(mbitem)
+
+    scoreBoardSmall = CreateMultiboard()
+    ..setRowCount(playerCount+1)
+    ..setColumnCount(2)
+    ..setTitle("Score")
+    MultiboardSetItemStyleBJ( scoreBoardSmall, 0, 0, true, false )
+
+    MultiboardSetItemWidthBJ(scoreBoardSmall,1,0,8)
+    MultiboardSetItemWidthBJ(scoreBoardSmall,2,0,4)
+    
+    mbitem = MultiboardGetItem(scoreBoardSmall, 0, 0)
+    MultiboardSetItemValue(mbitem, "Player")
+    MultiboardReleaseItem(mbitem)
+    
+    
+    mbitem = MultiboardGetItem(scoreBoardSmall, 0, 1)
+    MultiboardSetItemValue(mbitem, "Score")
+    MultiboardSetItemStyle(mbitem, true, false)
+    MultiboardReleaseItem(mbitem)
+    
+    MultiboardDisplay(scoreBoardSmall, false)
+    
+    MultiboardDisplay(scoreBoardBig, true)
+    
+    MultiboardMinimize(scoreBoardBig, true)
+    MultiboardMinimize(scoreBoardBig, false)
+
+    updateBoard()
+
+function periodicScoreUpdate()
+    for i = 0 to bj_MAX_PLAYERS-1
+        if playerState[i] == PlayerState.ALIVE
+            if playerHero[i]!= null
+                if not playerHero[i].isPaused()
+                    scoreSurvivedTime[i]++
+                    scoreScore[i]++
+                    updateScore(i, true)
 
 
 function moveHotkeyHeroes()
@@ -256,3 +515,20 @@ init
     CreateTrigger()
         ..addAction(function onSelection)
         ..registerAnyUnitEvent(EVENT_PLAYER_UNIT_SELECTED)
+
+    doAfter(0, () -> initMultiboard() )
+
+    CreateTrigger()
+        ..addAction(function periodicScoreUpdate)
+        ..registerTimerEvent(1, true)
+
+    rowToPlayer[0] = 0
+    for i = 0 to bj_MAX_PLAYERS-1
+        scoreBossKills[i] = 0
+        scoreHeroKills[i] = 0
+        scoreUnitKills[i] = 0
+        scoreScore[i] = 0
+        scoreSurvivedTime[i] = 0
+        scoreDeaths[i] = 0
+        playerToRow[i] = 0
+        rowToPlayer[i+1] = i

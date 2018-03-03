@@ -49,7 +49,6 @@ public class ItemObject
             ..setActivelyUsed(true)
             ..setUseAutomaticallyWhenAcquired(true)
             ..setDescription("")
-            ..setModelUsed("Objects\\InventoryItems\\runicobject\\runicobject.mdl")
             ..setPerishable(true)
 
         this.inventoryItem = new ItemDefinition(compItemId*2 + OBJECT_ID_ITEM_OFFSET+1, 'rat6')

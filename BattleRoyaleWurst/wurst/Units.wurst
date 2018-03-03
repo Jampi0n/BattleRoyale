@@ -1,0 +1,53 @@
+package Units
+
+import HashMap
+
+public class UnitType
+
+    private int unitTypeId
+    private int hitBox
+    private static constant typeIdMap = new HashMap<int, UnitType>()
+
+    construct(int unitTypeId, int hitBox)
+        this.unitTypeId = unitTypeId
+        this.hitBox = hitBox
+
+        typeIdMap.put(this.unitTypeId, this)
+
+    static function getHitBox(unit u) returns int
+        let unitType = getUnitType(u.getTypeId())
+        if unitType == null
+            if u.isType(UNIT_TYPE_HERO)
+                return 64
+            else if GetUnitLevel(u) == 10
+                return 128
+            else
+                return 32
+        else
+            return unitType.getHitBox()
+
+    static function getUnitType(int unitTypeId) returns UnitType
+        return typeIdMap.get(unitTypeId)
+
+    private function getHitBox() returns int
+        return this.hitBox
+
+
+init
+    new UnitType('n00F', 96)
+    new UnitType('n00J', 128)
+    new UnitType('n00G', 64)
+    new UnitType('n00P', 128)
+    new UnitType('n002', 64)
+    new UnitType('n00Q', 96)
+    new UnitType('n00Z', 96)
+    new UnitType('n010', 96)
+    new UnitType('n015', 96)
+    new UnitType('n012', 128)
+    new UnitType('n00C', 64)
+    new UnitType('n00M', 64)
+    new UnitType('n00Y', 96)
+    new UnitType('n00P', 128)
+    new UnitType('n007', 96)
+    new UnitType('n011', 64)
+    new UnitType('n00U', 96)

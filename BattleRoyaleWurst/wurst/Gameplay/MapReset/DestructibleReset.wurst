@@ -8,19 +8,19 @@ constant saveList = InitHashtable()
 int maxCount = 0
 int currentCount = 0
 
-function isTree(int typeId) returns boolean
-    return objectData.loadBoolean(typeId, 4)
+function isTree(int destTypeId) returns boolean
+    return objectData.loadBoolean(destTypeId, 4)
 
-function isSaved(int typeId) returns boolean
-    return objectData.loadBoolean(typeId, 0)
+function isSaved(int destTypeId) returns boolean
+    return objectData.loadBoolean(destTypeId, 0)
 
-function registerDestructible(int typeId, real minScale, real maxScale, int variations, boolean isTree)
+function registerDestructible(int destTypeId, real minScale, real maxScale, int variations, boolean isTree)
     objectData
-        ..saveBoolean(typeId, 0, true)
-        ..saveReal(typeId, 1, minScale)
-        ..saveReal(typeId, 2, maxScale)
-        ..saveInt(typeId, 3, variations-1)
-        ..saveBoolean(typeId, 4, isTree)
+        ..saveBoolean(destTypeId, 0, true)
+        ..saveReal(destTypeId, 1, minScale)
+        ..saveReal(destTypeId, 2, maxScale)
+        ..saveInt(destTypeId, 3, variations-1)
+        ..saveBoolean(destTypeId, 4, isTree)
 
 function saveSingle()
     let d = GetEnumDestructable()
@@ -46,15 +46,15 @@ function loadSingle()
     real scale
     int maxVariation
     int variation
-    int typeId = d.getTypeId()
+    int destTypeId = d.getTypeId()
 
-    if d != null and not isTree(typeId)
+    if d != null and not isTree(destTypeId)
         DestructableRestoreLife(d, GetDestructableMaxLife(d), false)
         SetDestructableLife(d, GetDestructableMaxLife(d))
     else
-        minScale = objectData.loadReal(typeId, 1)
-        maxScale = objectData.loadReal(typeId, 2)
-        maxVariation = objectData.loadInt(typeId, 3)
+        minScale = objectData.loadReal(destTypeId, 1)
+        maxScale = objectData.loadReal(destTypeId, 2)
+        maxVariation = objectData.loadInt(destTypeId, 3)
 
         if minScale == 0
             minScale = 1

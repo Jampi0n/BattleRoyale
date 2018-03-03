@@ -85,13 +85,14 @@ public class Skill
             return
         Skill castedSkill = convertTypeId(GetSpellAbilityId())
 
-        castedSkill.onCastFunction.cast(GetTriggerUnit(), GetSpellTargetUnit(), vec2(GetSpellTargetX(), GetSpellTargetY()) )
+        if castedSkill.onCastFunction != null
+            castedSkill.onCastFunction.cast(GetTriggerUnit(), GetSpellTargetUnit(), vec2(GetSpellTargetX(), GetSpellTargetY()) )
 
     static function hasId(int id) returns boolean
         return idMap.has(id)
 
-    static function hasTypeId(int typeId) returns boolean
-        return typeIdMap.has(typeId)
+    static function hasTypeId(int abiltiyTypeId) returns boolean
+        return typeIdMap.has(abiltiyTypeId)
 
     static function convertId(int id) returns Skill
         if hasId(id)
@@ -100,9 +101,9 @@ public class Skill
             error("Skill.convertId == null")
             return null
 
-    static function convertTypeId(int typeId) returns Skill
-        if hasTypeId(typeId)
-            return typeIdMap.get(typeId)
+    static function convertTypeId(int abiltiyTypeId) returns Skill
+        if hasTypeId(abiltiyTypeId)
+            return typeIdMap.get(abiltiyTypeId)
         else
             error("Skill.convertTypeId == null")
             return null
@@ -169,8 +170,8 @@ public class Item
     static function hasId(int id) returns boolean
         return idMap.has(id)
 
-    static function hasTypeId(int typeId) returns boolean
-        return typeIdMap.has(typeId)
+    static function hasTypeId(int itemTypeId) returns boolean
+        return typeIdMap.has(itemTypeId)
 
     static function convertId(int id) returns Item
         if hasId(id)
@@ -180,9 +181,9 @@ public class Item
             return null
             
 
-    static function convertTypeId(int typeId) returns Item
-        if hasTypeId(typeId)
-            return typeIdMap.get(typeId)
+    static function convertTypeId(int itemTypeId) returns Item
+        if hasTypeId(itemTypeId)
+            return typeIdMap.get(itemTypeId)
         else
             error("Item.convertTypeId == null")
             return null

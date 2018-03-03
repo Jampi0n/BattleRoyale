@@ -33,11 +33,11 @@ function loadSingle()
     real x = saveList.loadReal(currentCount, 2)
     real y = saveList.loadReal(currentCount, 3)
     real facing = saveList.loadReal(currentCount, 4)
-    int typeId = saveList.loadInt(currentCount, 1)
+    int unitTypeId = saveList.loadInt(currentCount, 1)
     int playerId = saveList.loadInt(currentCount, 5)
 
     u.remove()
-    u = createUnit(Player(playerId), typeId, vec2(x, y), facing.fromDeg())
+    u = createUnit(Player(playerId), unitTypeId, vec2(x, y), facing.fromDeg())
     saveList.saveUnitHandle(currentCount, 0, u)
 
     currentCount++

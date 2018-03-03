@@ -1,11 +1,13 @@
 package SkillObjectIds
 
 import public SkillInvisibility
+import public SkillStormbolt
 
 public boolean initSkills = true
 
 public function setupAllSkills()
     setupIvisibility()
+    setupStormBolt()
 
 
 //import SkillGeneration

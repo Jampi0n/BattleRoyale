@@ -5,3 +5,23 @@ public constant DEBUG_MODE = false
 public function debugPrint(string text)
     if DEBUG_MODE
         print(text)
+
+public function unit.isTargetable(player source, boolean allowFriends, boolean allowEnemies) returns boolean
+    print("isTargetable")
+    if not this.isAlive()
+        return false
+    if this.isType(UNIT_TYPE_STRUCTURE)
+        return false
+    if this.hasAbility('Bvul')
+        return false
+    if this.isType(UNIT_TYPE_ANCIENT)
+        return false
+    if not allowEnemies and IsUnitEnemy(this, source) 
+        return false
+    if not allowFriends
+        print("dont target friends")
+        if not IsUnitEnemy(this, source) 
+            print("this is no enemy")
+            return false
+    
+    return true
