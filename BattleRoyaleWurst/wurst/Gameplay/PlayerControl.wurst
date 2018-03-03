@@ -217,14 +217,14 @@ function onSelection()
             SelectUnit(pHero, true)
         disableSelectionDetection = false
     else if selected == hotkeyHero2[pId]
-        Inventory.getInventory(pHero).changePage(0)
+        Inventory.getInventory(pHero).changePage(1)
         disableSelectionDetection = true
         if GetLocalPlayer() == Player(pId)
             ClearSelection()
             SelectUnit(pHero, true)
         disableSelectionDetection = false
     else if selected == hotkeyHero3[pId]
-        Inventory.getInventory(pHero).changePage(0)
+        Inventory.getInventory(pHero).changePage(2)
         disableSelectionDetection = true
         if GetLocalPlayer() == Player(pId)
             ClearSelection()

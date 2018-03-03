@@ -57,7 +57,11 @@ function unit.addPermanentEffect(int itemTypeId)
 
     let itm = Item.convertTypeId(itemTypeId)
 
-    if itm.getId() == PERMA_A
+    if itm.getId() == ITEM_CLAWS_ATTACK
+        this.addBonus(Stat.AD, 10)
+    else if itm.getId() == ITEM_RING_ARMOR
+        this.addBonus(Stat.AR, 5)
+    else if itm.getId() == ITEM_PERIAPT_HP
         this.addBonus(Stat.HP, 50)
 
 function unit.removePermanentEffect(int itemTypeId)
@@ -66,7 +70,11 @@ function unit.removePermanentEffect(int itemTypeId)
 
     let itm = Item.convertTypeId(itemTypeId)
 
-    if itm.getId() == PERMA_A
+    if itm.getId() == ITEM_CLAWS_ATTACK
+        this.addBonus(Stat.AD, -10)
+    else if itm.getId() == ITEM_RING_ARMOR
+        this.addBonus(Stat.AR, -5)
+    else if itm.getId() == ITEM_PERIAPT_HP
         this.addBonus(Stat.HP, -50)
 
 function item.removeItemNoDrop()
@@ -219,27 +227,29 @@ public class Inventory
         Item itemClass = Item.convertTypeId(itemTypeId)
         itemClass.createWorldItem(this.assocUnit.getPos(), GetItemCharges(itm))
 
-        let abilityTypeId = itemClass.getSkill().getTypeId()
+        let skill = itemClass.getSkill()
+        if skill!= null
+            let abilityTypeId = itemClass.getSkill().getTypeId()
 
-        if this.assocUnit.removeAbility(abilityTypeId)
-            debugPrint("Q was removed")
-            this.activeSkills[0] = null
-            this.addDummySkillToSlot(0)
+            if this.assocUnit.removeAbility(abilityTypeId)
+                debugPrint("Q was removed")
+                this.activeSkills[0] = null
+                this.addDummySkillToSlot(0)
 
-        if this.assocUnit.removeAbility(abilityTypeId+1)
-            debugPrint("W was removed")
-            this.activeSkills[1] = null
-            this.addDummySkillToSlot(1)
+            if this.assocUnit.removeAbility(abilityTypeId+1)
+                debugPrint("W was removed")
+                this.activeSkills[1] = null
+                this.addDummySkillToSlot(1)
 
-        if this.assocUnit.removeAbility(abilityTypeId+2)
-            debugPrint("E was removed")
-            this.activeSkills[2] = null
-            this.addDummySkillToSlot(2)
+            if this.assocUnit.removeAbility(abilityTypeId+2)
+                debugPrint("E was removed")
+                this.activeSkills[2] = null
+                this.addDummySkillToSlot(2)
 
-        if this.assocUnit.removeAbility(abilityTypeId+3)
-            debugPrint("R was removed")
-            this.activeSkills[3] = null
-            this.addDummySkillToSlot(3)
+            if this.assocUnit.removeAbility(abilityTypeId+3)
+                debugPrint("R was removed")
+                this.activeSkills[3] = null
+                this.addDummySkillToSlot(3)
 
         this.items[slot] = null
         itm.setVisible(true)
@@ -430,8 +440,10 @@ public class Inventory
             triggerInventory.loadCurrentPage()
             return
         
-        int itemTypeId = Skill.convertTypeId(abilityTypeId).getItem().getInventoryItem()
-        triggerInventory.removeItemTypeCharges(itemTypeId, 1)
+
+        if Skill.hasTypeId(abilityTypeId)
+            int itemTypeId = Skill.convertTypeId(abilityTypeId).getItem().getInventoryItem()
+            triggerInventory.removeItemTypeCharges(itemTypeId, 1)
         
     protected static function onItemPickUp()
         let itm = GetManipulatedItem()

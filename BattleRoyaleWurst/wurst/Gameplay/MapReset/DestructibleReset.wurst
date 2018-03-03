@@ -1,6 +1,7 @@
 package DestructibleReset
 
 import Execute
+import Barrel
 
 constant objectData = InitHashtable()
 constant saveList = InitHashtable()
@@ -29,7 +30,7 @@ function saveSingle()
             ..saveInt(maxCount, 1, d.getTypeId())
             ..saveReal(maxCount, 2, d.getX())
             ..saveReal(maxCount, 3, d.getY())
-            ..saveBoolean(maxCount, 4, GetWidgetLife(d) <=0 )
+            ..saveBoolean(maxCount, 4, GetDestructableLife(d) <=0 )
         maxCount++
         
 public function saveAllDestructibles()
@@ -74,6 +75,7 @@ function loadSingle()
         saveList.saveDestructableHandle(currentCount, 0, d)
 
         //register item drops
+        registerBarrel(d)
 
     currentCount++
     if currentCount <= maxCount
@@ -230,3 +232,6 @@ function initDestructibles()
     registerDestructible('BTrx',1,1,1,false)
     registerDestructible('ITag',1,1,1,false)
     registerDestructible('Volc',1,1,1,false)*/
+
+init
+    initDestructibles()

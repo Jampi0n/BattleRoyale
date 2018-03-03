@@ -5,6 +5,9 @@ package ItemGeneration
 import ItemObjEditing
 import HashMap
 import ObjectIds
+import public Assets
+import public ObjectIdGenerator
+import public AbilityObjEditing
 
 public constant int LEARN_SKILL = 'A00B'
 
@@ -53,6 +56,7 @@ public class ItemObject
             ..setAbilities("")
             ..setUseAutomaticallyWhenAcquired(false)
             ..setDescription("")
+            ..setPerishable(false)
 
 
 
@@ -71,6 +75,7 @@ public class ItemObject
                 ..setClassification("Charged")
                 ..setNumberofCharges(1000)
                 ..setActivelyUsed(true)
+                ..setPerishable(true)
             this.worldItem
                 ..setNumberofCharges(1000)
                 ..setClassification("Purchasable")
@@ -104,10 +109,10 @@ public class ItemObject
     function getId() returns int
         return this.id
 
-    function setAbility(string abil)
+    function setAbility(int abil)
         this.inventoryItem
-            ..setAbilities(abil)
-            ..setCooldownGroup(abil)
+            ..setAbilities(int2fourchar(abil))
+            ..setCooldownGroup(int2fourchar(abil))
 
 
 public function newItem(ItemType itemType) returns int

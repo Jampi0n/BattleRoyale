@@ -1,0 +1,27 @@
+package BasicPermanent
+
+import ItemGeneration
+
+
+public constant ITEM_CLAWS_ATTACK = compiletime(newItem(ItemType.Permanent))
+public constant ITEM_RING_ARMOR = compiletime(newItem(ItemType.Permanent))
+public constant ITEM_PERIAPT_HP = compiletime(newItem(ItemType.Permanent))
+
+
+@compiletime
+public function setupBasicPermanent()
+    if compiletime
+        ITEM_CLAWS_ATTACK.getItemObject()
+            ..setIcon(Icons.bTNClawsOfAttack)
+            ..setName("Claws of Attack")
+            ..setTooltip("Increases attack damage by 10.")
+
+        ITEM_RING_ARMOR.getItemObject()
+            ..setIcon(Icons.bTNRingGreen)
+            ..setName("Ring of Protection")
+            ..setTooltip("Increases armor by 5.")
+
+        ITEM_PERIAPT_HP.getItemObject()
+            ..setIcon(Icons.bTNPeriapt)
+            ..setName("Periapt of Vitality")
+            ..setTooltip("Increases hit points by 50.")

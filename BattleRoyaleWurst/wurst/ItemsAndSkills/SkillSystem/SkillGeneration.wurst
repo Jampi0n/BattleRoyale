@@ -2,12 +2,13 @@ package SkillGeneration
 
 //typeId = object editor code '', Id = custom compile time generated id from 0...n
 
-import public AbilityObjEditing
+
 import ObjectIds
 import HashMap
 import ItemGeneration
 import public Assets
 import public ObjectIdGenerator
+import public AbilityObjEditing
 
 public constant int BUFF_INSTANT_Q = 'B003'
 public constant int BUFF_INSTANT_W = 'B002'

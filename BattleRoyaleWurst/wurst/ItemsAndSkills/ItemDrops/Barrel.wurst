@@ -1,0 +1,61 @@
+package Barrel
+
+import ItemDropSystem
+import ItemObjectIds
+import SkillObjectIds
+import initlater Gameplay
+
+constant BARREL_DROPS = new DropList()
+
+trigger dropTrigger
+
+
+function onDeath()
+    if mapLoading
+        return
+
+    print("drop item please")
+
+    let drop = BARREL_DROPS.getRandom()
+
+    if drop == null
+        return
+
+    drop.getItem().createWorldItem(GetTriggerDestructable().getPos(), GetRandomInt(drop.getMinCount(), drop.getMaxCount()))
+
+
+
+
+public function registerBarrel(destructable d)
+    int destId = d.getTypeId()
+    if destId=='LTbx' or destId=='LTbs' or destId=='LTbr'
+        dropTrigger.registerDeathEvent(d)
+
+function registerGroup()
+    registerBarrel(GetEnumDestructable())
+
+function recycle()
+    dropTrigger
+        ..clearActions()
+        ..clearConditions()
+        ..destr()
+    dropTrigger = CreateTrigger()
+        ..addAction(function onDeath)
+
+
+
+
+init
+    dropTrigger = CreateTrigger()
+        ..addAction(function onDeath)
+    EnumDestructablesInRect(bj_mapInitialPlayableArea, null, function registerGroup)
+
+    BARREL_DROPS.addDrop(ITEM_CLARITY_POTION, 200)
+    BARREL_DROPS.addDrop(ITEM_HEALING_POTION, 200)
+    BARREL_DROPS.addDrop(ITEM_INVULNERABILITY_POTION, 200)
+
+    BARREL_DROPS.addDrop(ITEM_CLAWS_ATTACK, 200)
+    BARREL_DROPS.addDrop(ITEM_RING_ARMOR, 200)
+    BARREL_DROPS.addDrop(ITEM_PERIAPT_HP, 200)
+
+    BARREL_DROPS.addSkillDrop(SKILL_INVISIBILITY, 200, 3, 5)

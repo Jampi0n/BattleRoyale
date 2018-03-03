@@ -1,0 +1,49 @@
+package BasicPotions
+
+import ItemGeneration
+
+public constant ITEM_CLARITY_POTION = compiletime(newItem(ItemType.Usable))
+public constant ITEM_HEALING_POTION = compiletime(newItem(ItemType.Usable))
+public constant ITEM_INVULNERABILITY_POTION = compiletime(newItem(ItemType.Usable))
+
+
+@compiletime
+public function setupBasicPotions()
+    if compiletime
+
+        int abilId = ABIL_ID_GEN.next()
+        new AbilityDefinitionPotionofRejuvI(abilId)
+            ..setAllowWhenFull(1, AllowWhenFull.NEVER)
+            ..setManaRegenerated(1, 0)
+            ..setLifeRegenerated(1, 25)
+            ..setCooldown(1, 1)
+            ..setDurationHero(1, 5)
+
+
+        ITEM_CLARITY_POTION.getItemObject()
+            ..setIcon(Icons.bTNLesserClarityPotion)
+            ..setAbility(abilId)
+            ..setName("Clarity Potion")
+            ..setTooltip("Restores hit points over time.")
+
+        abilId = ABIL_ID_GEN.next()
+        new AbilityDefinitionItemHealGreater(abilId)
+            ..setHitPointsGained(1, 100)
+            ..setCooldown(1, 8)
+
+        ITEM_HEALING_POTION.getItemObject()
+            ..setIcon(Icons.bTNPotionGreenSmall)
+            ..setAbility(abilId)
+            ..setName("Potion of Healing")
+            ..setTooltip("Instantly restores hit points.")
+
+        abilId = ABIL_ID_GEN.next()
+        new AbilityDefinition(abilId, 'AIvu')
+            ..setDurationHero(1, 3)
+            ..setCooldown(1, 3)
+
+        ITEM_INVULNERABILITY_POTION.getItemObject()
+            ..setIcon(Icons.bTNGreaterInvulneralbility)
+            ..setAbility(abilId)
+            ..setName("Potion of Invulnerability")
+            ..setTooltip("Turns the hero invulnerable for a short time.")

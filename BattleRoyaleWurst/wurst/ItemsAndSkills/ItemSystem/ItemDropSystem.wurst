@@ -1,0 +1,67 @@
+package ItemDropSystem
+
+import LinkedList
+import RuntimeInitialize
+import ErrorHandling
+
+public class ItemDrop
+
+    private int itemId
+    private int chance
+    private int minCount
+    private int maxCount
+
+    construct(int itemId, int chance, int minCount, int maxCount)
+        this.itemId = itemId
+        this.chance = chance
+        this.minCount = minCount
+        this.maxCount = maxCount
+
+    function getChance() returns int
+        return this.chance
+    
+    function getMinCount() returns int
+        return this.minCount
+
+    function getMaxCount() returns int
+        return this.maxCount
+
+    function getItem() returns Item
+        return Item.convertId(this.itemId)
+
+public class DropList
+
+    private constant itemsDropped = new LinkedList<ItemDrop>()
+    private int totalDrops = 0
+    private int totalChance = 0
+
+    construct()
+
+    function addSkillDrop(int skillId, int chance, int minCount, int maxCount)
+        this.addDrop(Skill.convertId(skillId).getItem().getId(), chance, minCount, maxCount)
+
+    function addDrop(int itemId, int chance, int minCount, int maxCount)
+        let newDrop = new ItemDrop(itemId, chance, minCount, maxCount)
+        this.itemsDropped.add(newDrop)
+
+        totalDrops++
+        totalChance+=chance
+
+    function addDrop(int itemId, int chance, int count)
+        this.addDrop(itemId, chance, count, count)
+
+    function addDrop(int itemId, int chance)
+        this.addDrop(itemId, chance, 1, 1)
+
+    function getRandom() returns ItemDrop
+        let random = GetRandomInt(1, totalChance)
+        int currentChance = 0
+
+        for ItemDrop drop in itemsDropped
+            currentChance += drop.getChance()
+            if random <= currentChance
+                return drop
+                
+        error("Unable to find random item.")
+        return null
+
