@@ -47,7 +47,7 @@ function roundBegins()
     TimerDialogDisplay(windowRoundStart, false)
     TimerDialogDisplay(windowCircleMessage, true)
 
-    timerCircleMessage.start(ROUND_MESSAGE_DELAY.toReal(), function showCircleMessage)
+    timerCircleMessage.start(ROUND_MESSAGE_DELAY, function onTimerMessage)
 
     ForGroup(playerHeroes, () -> GetEnumUnit().unpause())
 

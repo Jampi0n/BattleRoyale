@@ -1,8 +1,11 @@
 package Circle
 
 import TimerUtils
+import MapBounds
+import ClosureTimers
+import Execute
 
-public constant ROUND_MESSAGE_DELAY = 10
+public constant ROUND_MESSAGE_DELAY = 10.
 
 public timer timerCircleMove = getTimer()
 public timerdialog windowCircleMove = CreateTimerDialog(timerCircleMove)
@@ -19,6 +22,17 @@ public int circleCurrentY
 public int circleMoveSpeed = 1
 public int circleFactor = 65
 public int circleRound = 1
+public int circleNextRadius
+public int circleNextX
+public int circleNextY
+public int circleDrawX
+public int circleDrawY
+public int circleDrawRadius
+public int circleRadiusDifference
+public real circleCenterDirection
+public real circleCenterDistance
+
+public real array circleRoundDuration
 
 
 group unitsOnMap
@@ -26,7 +40,10 @@ boolean moving = FALSE
 
 integer countVM = 0
 integer currentVM = 0
-fogmodifier array arrayVM
+fogmodifier array arrayVM1
+fogmodifier array arrayVM2
+fogmodifier array arrayVM3
+fogmodifier array arrayVM4
 integer currentPlayer
 real currentX
 real currentY
@@ -46,11 +63,255 @@ integer c_dSE
 integer c_count
 
 
-public function showCircleMessage()
-    print("start circle soon")
+function onTimerCircleMove()
+    TimerDialogDisplay(windowCircleMove, false)
+    moving = true
 
-public function initCircle()
-    print("inti circle")
+function circleVisionPoint(int x, int y)
+    let realX = (x + circleDrawX) * 128.
+    let realY = (y + circleDrawY) * 128.
+
+    //circleCount++
+
+    if playableMapRect.contains(vec2(realX, realY))
+        for i = 0 to (bj_MAX_PLAYERS/4).toInt()-1
+            countVM++
+            arrayVM1[countVM] = CreateFogModifierRadius(Player(i*4), FOG_OF_WAR_VISIBLE, realX, realY, 512, true, false)
+                ..start()
+            arrayVM2[countVM] = CreateFogModifierRadius(Player(i*4 + 1), FOG_OF_WAR_VISIBLE, realX, realY, 512, true, false)
+                ..start()
+            arrayVM3[countVM] = CreateFogModifierRadius(Player(i*4 + 2), FOG_OF_WAR_VISIBLE, realX, realY, 512, true, false)
+                ..start()
+            arrayVM4[countVM] = CreateFogModifierRadius(Player(i*4 + 3), FOG_OF_WAR_VISIBLE, realX, realY, 512, true, false)
+                ..start()
+            //visionCount++
+
+function circleVisionLoop()
+    if c_x >= c_y
+        return
+    if c_F < 0
+        c_F += c_dE
+        c_dSE += 2
+    else
+        c_F += c_dSE
+        c_y--
+        c_dSE += 4
+
+    c_x++
+    c_dE += 2
+
+    circleVisionPoint(c_x, c_y)
+    circleVisionPoint(-c_x, c_y)
+    circleVisionPoint(c_x, -c_y)
+    circleVisionPoint(-c_x, -c_y)
+
+    circleVisionPoint(c_y, c_x)
+    circleVisionPoint(-c_y, c_x)
+    circleVisionPoint(c_y, -c_x)
+    circleVisionPoint(-c_y, -c_x)
+
+    c_count++
+
+    if c_count < 20
+        circleVisionLoop()
+    else
+        c_count = 0
+        execute(() -> circleVisionLoop() )
+
+function addCircleVision()
+    c_xStart = 0
+    c_yStart = 0
+    c_R = circleDrawRadius
+    c_y = c_R
+    c_x = 0
+    c_F = 1 - c_R
+    c_dE = 1
+    c_dSE = 2 - c_R -c_R
+    c_count = 0
+
+    circleVisionPoint(0, c_R)
+    circleVisionPoint(c_R, 0)
+    circleVisionPoint(0, -c_R)
+    circleVisionPoint(-c_R, 0)
+    circleVisionLoop()
+
+
+function removeCircleVision()
+    for i = 0 to 1000
+        currentVM++
+        if currentVM > countVM
+            return
+
+        arrayVM1[currentVM].destr()
+        arrayVM2[currentVM].destr()
+        arrayVM3[currentVM].destr()
+        arrayVM4[currentVM].destr()
+
+        arrayVM1[currentVM] = null
+        arrayVM2[currentVM] = null
+        arrayVM3[currentVM] = null
+        arrayVM4[currentVM] = null
+    
+    execute(() -> removeCircleVision() )
+    
+
+function addFogModifier()
+    countVM = 0
+    addCircleVision()
+
+function removeFogModifier()
+    print("fogModifiers: "+countVM.toString())
+    currentVM = 0
+    removeCircleVision()
+
+
+function revealNextCircle()
+    addFogModifier()
+    doAfter(1, () -> removeFogModifier())
+    timerCircleMove.start(circleRoundDuration[circleRound], function onTimerCircleMove)
+    TimerDialogDisplay(windowCircleMove, true)
+
+
+function drawPoint(int x, int y)
+    let realX = (x + circleDrawX) * 128.
+    let realY = (y + circleDrawY) * 128.
+
+    if playableMapRect.contains( vec2(realX, realY))
+        SetBlight(Player(PLAYER_NEUTRAL_AGGRESSIVE), realX, realY, 256, true)
+
+function drawCircle()
+    int R = circleDrawRadius
+    int y = R
+    int x = 0
+    int F = 1-R
+    int dE = 1
+    int dSE = 2 - R - R
+    drawPoint(0, R)
+    drawPoint(R, 0)
+    drawPoint(0, -R)
+    drawPoint(-R, 0)
+
+    while x<y
+        if F < 0
+            F += dE
+            dSE += 2
+        else
+            F += dSE
+            y--
+            dSE += 4
+
+        x++
+        dE += 2
+        drawPoint(x, y)
+        drawPoint(x, -y)
+        drawPoint(-x, y)
+        drawPoint(-x, -y)
+
+        drawPoint(y, x)
+        drawPoint(y, -x)
+        drawPoint(-y, x)
+        drawPoint(-y, -x)
+
+
+function initCircleNext()
+    let randomAngle = GetRandomReal(0, bj_PI * 2)
+    int randomDistance
+    circleNextRadius = (circleCurrentRadius * (circleFactor/100)).toInt()
+
+    randomDistance = GetRandomInt(0, circleCurrentRadius - circleNextRadius)
+    randomDistance = GetRandomInt(randomDistance, circleCurrentRadius - circleNextRadius)
+
+    
+
+    circleNextX = (circleCurrentX + randomAngle.cos() * randomDistance).toInt()
+    circleNextY = (circleCurrentY + randomAngle.sin() * randomDistance).toInt()
+
+
+    circleCenterDirection = randomAngle
+    circleRadiusDifference = circleCurrentRadius - circleNextRadius
+    
+    circleCenterDistance = SquareRoot( 0. + (circleNextX-circleCurrentX).squared() + (circleNextY-circleCurrentY).squared())
+    
+    circleDrawRadius = circleNextRadius
+    circleDrawX = circleNextX
+    circleDrawY = circleNextY
+
+    drawCircle()
+    revealNextCircle()
+
+function initCircleFirst()
+    circleNextRadius = 120
+    circleNextX = circleCurrentX
+    circleNextY = circleCurrentY
+
+    circleCenterDirection = 0
+    circleCenterDistance = 0
+
+    circleRadiusDifference = circleCurrentRadius - circleNextRadius
+
+    circleDrawRadius = circleNextRadius
+    circleDrawX = circleNextX
+    circleDrawY = circleNextY
+    circleCurrentX = circleNextX
+    circleCurrentY = circleNextY
+    drawCircle()
+    revealNextCircle()
+
+
+public function onTimerMessage()
+    TimerDialogDisplay( windowCircleMessage, false)
+    if circleCurrentRadius < 5
+        return
+    
+    print("The circle shrinks in "+circleRoundDuration[circleRound].toInt().toString()+" seconds." )
+
+    if circleRound != 1
+        initCircleNext()
+    else
+        initCircleFirst()
+
+function moveCircle()
+    if not moving
+        return
+    
+    if circleCurrentRadius > circleNextRadius
+        circleCurrentRadius = max(circleNextRadius, circleCurrentRadius - circleMoveSpeed )
+        var advance = 1 - (circleCurrentRadius - circleNextRadius) / circleRadiusDifference
+
+        circleCurrentX = circleNextX - (circleCenterDirection.cos() * (1 - advance) * circleCenterDistance).toInt()
+        circleCurrentY = circleNextY - (circleCenterDirection.sin() * (1 - advance) * circleCenterDistance).toInt()
+
+        circleDrawX = circleCurrentX
+        circleDrawY = circleCurrentY
+
+        circleDrawRadius = circleCurrentRadius
+
+        drawCircle()
+    else
+        circleRound++
+        moving = false
+        timerCircleMessage.start(ROUND_MESSAGE_DELAY, function onTimerMessage)
+        TimerDialogDisplay(windowCircleMessage, true)
+        print("The circle was shrunk. Round "+circleRound.toString()+" stats.")
 
 public function circleStopMoving()
-    print("stop circle")
+    moving = false
+
+public function initCircle()
+    print("init circle")
+    moving = false
+    circleCurrentRadius = 170
+    circleCurrentX = (playableCenter.x/128).toInt()
+    circleCurrentY = (playableCenter.y/128).toInt()
+    circleMoveSpeed = 1
+    circleFactor = 65
+    circleRound = 1
+
+    for i = 0 to 20
+        circleRoundDuration[i] = 500 / (i+2.).pow(1.5)
+
+init
+    unitsOnMap = CreateGroup()
+    CreateTrigger()
+        ..addAction(function moveCircle)
+        ..registerTimerEvent(1, true)
