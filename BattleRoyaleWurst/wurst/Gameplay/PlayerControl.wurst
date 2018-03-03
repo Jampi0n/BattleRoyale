@@ -31,6 +31,8 @@ real array startY
 int maxLocations = 0
 int totalLocations = 0
 
+boolean disableSelectionDetection = false
+
 //multiboard
 int array rowToPlayer
 int array playerToRow
@@ -187,7 +189,47 @@ function scoreHeroKill(int killer, int victim)
 
 
 
+function moveHotkeyHeroes()
+    for i = 0 to bj_MAX_PLAYERS-1
+        if playerHero[i] != null
+            let pos = playerHero[i].getPos()
+            hotkeyHero1[i].setXY(pos)
+            hotkeyHero2[i].setXY(pos)
+            hotkeyHero3[i].setXY(pos)
 
+
+function onSelection()
+    if disableSelectionDetection
+        return
+
+    let pId = GetTriggerPlayer().getId()
+    let selected = GetTriggerUnit()
+    let pHero = playerHero[pId]
+
+    if pHero == null
+        return
+
+    if selected == hotkeyHero1[pId]
+        Inventory.getInventory(pHero).changePage(0)
+        disableSelectionDetection = true
+        if GetLocalPlayer() == Player(pId)
+            ClearSelection()
+            SelectUnit(pHero, true)
+        disableSelectionDetection = false
+    else if selected == hotkeyHero2[pId]
+        Inventory.getInventory(pHero).changePage(0)
+        disableSelectionDetection = true
+        if GetLocalPlayer() == Player(pId)
+            ClearSelection()
+            SelectUnit(pHero, true)
+        disableSelectionDetection = false
+    else if selected == hotkeyHero3[pId]
+        Inventory.getInventory(pHero).changePage(0)
+        disableSelectionDetection = true
+        if GetLocalPlayer() == Player(pId)
+            ClearSelection()
+            SelectUnit(pHero, true)
+        disableSelectionDetection = false
 
 
 
@@ -208,3 +250,9 @@ function setupPlayers()
 init
     setupPlayers()
     setupHeroes()
+    CreateTrigger()
+        ..addAction(function moveHotkeyHeroes)
+        ..registerTimerEvent(0.25, true)
+    CreateTrigger()
+        ..addAction(function onSelection)
+        ..registerAnyUnitEvent(EVENT_PLAYER_UNIT_SELECTED)

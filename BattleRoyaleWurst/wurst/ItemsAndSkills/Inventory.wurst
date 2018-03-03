@@ -401,7 +401,7 @@ public class Inventory
                     printTimedToPlayer("You cannot learn items in these slots!", 5, this.assocUnit.getOwner())
 
 
-    private function changePage(int newPage)
+    function changePage(int newPage)
         this.currentPage = newPage
         this.loadCurrentPage()
 
