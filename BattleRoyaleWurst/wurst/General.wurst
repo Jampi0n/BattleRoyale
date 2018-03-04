@@ -1,5 +1,9 @@
 package General
 
+import Missile
+import Buff
+import initlater Units
+
 public constant DEBUG_MODE = false
 
 public function debugPrint(string text)
@@ -7,7 +11,6 @@ public function debugPrint(string text)
         print(text)
 
 public function unit.isTargetable(player source, boolean allowFriends, boolean allowEnemies) returns boolean
-    print("isTargetable")
     if not this.isAlive()
         return false
     if this.isType(UNIT_TYPE_STRUCTURE)
@@ -18,10 +21,15 @@ public function unit.isTargetable(player source, boolean allowFriends, boolean a
         return false
     if not allowEnemies and IsUnitEnemy(this, source) 
         return false
-    if not allowFriends
-        print("dont target friends")
-        if not IsUnitEnemy(this, source) 
-            print("this is no enemy")
-            return false
+    if not allowFriends and not IsUnitEnemy(this, source) 
+        return false
     
     return true
+
+init
+    setHitBoxFunction( (unit u) -> (begin
+        return UnitType.getHitBox(u).toReal()
+    end) )
+
+    useNativeBuffListAllocation()
+    dispelBuffsOnDeath()

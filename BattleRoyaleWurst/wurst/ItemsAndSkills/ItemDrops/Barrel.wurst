@@ -14,7 +14,6 @@ function onDeath()
     if mapLoading
         return
 
-    print("drop item please")
 
     let drop = BARREL_DROPS.getRandom()
 

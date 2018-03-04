@@ -160,7 +160,7 @@ function addFogModifier()
     addCircleVision()
 
 function removeFogModifier()
-    print("fogModifiers: "+countVM.toString())
+    //print("fogModifiers: "+countVM.toString())
     currentVM = 0
     removeCircleVision()
 
@@ -298,7 +298,7 @@ public function circleStopMoving()
     moving = false
 
 public function initCircle()
-    print("init circle")
+    //print("init circle")
     moving = false
     circleCurrentRadius = 170
     circleCurrentX = (playableCenter.x/128).toInt()
