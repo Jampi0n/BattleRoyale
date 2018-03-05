@@ -1,0 +1,38 @@
+package SkillEnsnare
+
+import SkillGeneration
+import initlater RuntimeInitialize
+
+public constant SKILL_ENSNARE = compiletime(newSkill("Ensnare", 7, false))
+
+
+
+@compiletime
+public function setupEnsnare()
+    real dur = 4
+
+    if compiletime
+        SKILL_ENSNARE.getSkillObject()
+            ..setDescription("Throws a net at the target direction, immoblizing the first target it hits for "+dur.toInt().toString()+" seconds.")
+            ..setIcon(Icons.bTNEnsnare)
+            ..setManaCost(0)
+            ..setRange(900)
+            ..setTargetType(CHANNEL_POINT_TARGET)
+
+    else
+        SKILL_ENSNARE.attachCode( (unit caster, unit _target, vec2 pos) -> (begin
+            new Missile(caster, caster.getPos3with(80), 700, caster.getPos().angleTo(pos), Abilities.ensnaremissile)
+                ..setReflectFunction( defaultReflect )
+                ..hitOnce()
+                ..setMaxRange(1000)
+                ..setSize(150)
+                ..setHitCondition((Missile missile, unit missileTarget) -> (begin
+                    return missileTarget.isTargetable(missile.getOwner().getOwner(), false, true)
+                end) )
+                ..setHitFunction( (Missile missile, unit missileTarget) -> (begin
+                    new Buff(missileTarget, caster, dur, ENSNARED, 1)
+                    missile.destr()
+                end))
+        end))
+
+    

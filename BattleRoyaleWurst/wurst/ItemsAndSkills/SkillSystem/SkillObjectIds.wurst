@@ -2,12 +2,24 @@ package SkillObjectIds
 
 import public SkillInvisibility
 import public SkillStormbolt
+import public SkillEnsnare
+import public SkillShadowStrike
+import public SkillShockwave
+import public SkillSpeedBoost
+import public SkillReflector
+import public SkillMortarGrenade
 
 public boolean initSkills = true
 
 public function setupAllSkills()
     setupIvisibility()
     setupStormBolt()
+    setupEnsnare()
+    setupShadowStrike()
+    setupShockwave()
+    setupSpeedBoost()
+    setupReflector()
+    setupMortarGrenade()
 
 
 //import SkillGeneration

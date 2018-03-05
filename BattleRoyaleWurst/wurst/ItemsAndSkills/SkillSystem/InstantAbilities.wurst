@@ -3,7 +3,6 @@ package InstantAbilities
 import ClosureTimers
 import SkillGeneration
 import RuntimeInitialize
-import General
 
 function onCast()
     let target = GetSpellAbilityUnit()

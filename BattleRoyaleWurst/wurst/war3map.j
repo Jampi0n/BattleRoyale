@@ -1,169 +1,24 @@
 globals
     // User-defined
-integer udg_Circle_Current_R= 0
-integer udg_Circle_Next_R= 0
-integer udg_Circle_Current_X= 0
-integer udg_Circle_Current_Y= 0
-integer udg_Circle_Next_X= 0
-integer udg_Circle_Next_Y= 0
-integer udg_Circle_Move_Speed= 0
-integer udg_Circle_Draw_R= 0
-integer udg_Circle_Draw_X= 0
-integer udg_Circle_Draw_Y= 0
-integer udg_Circle_Factor= 0
 real udg_Temp_Real= 0
-integer array udg_TerrainType
-timer udg_TimerCircleMove= null
-timer udg_TimerCircleMessage= null
-timerdialog udg_WindowCircleMove= null
-integer udg_Round= 0
-real udg_TerrainX= 0
-real udg_TerrainY= 0
-real array udg_Round_Duration
-location udg_Temp_Point= null
-real array udg_Round_Message_Delay
-timerdialog udg_WindowCircleMessage= null
-timer udg_TimerRoundStart= null
-timerdialog udg_WindowRoundStart= null
 group udg_Temp_Group= null
-integer array udg_PlayerStatus
-real udg_Circle_Center_Direction= 0
-integer udg_Circle_Radius_Difference= 0
-real udg_Circle_Center_Distance= 0
 unit array udg_PlayerHero
-group udg_PlayerHeroes= null
 force udg_PlayerGroup= null
 force udg_ObserverGroup= null
-unit array udg_HotkeyHero1
-unit array udg_HotkeyHero2
-unit array udg_HotkeyHero3
-boolean udg_MapLoading= false
-fogmodifier array udg_MapVision
-timer udg_TimerRoundEnd= null
-timerdialog udg_WindowRoundEnd= null
-integer array udg_PlayerScore
-integer array udg_PlayerDeaths
-integer array udg_PlayerHeroKills
-integer array udg_PlayerBossKills
-integer array udg_PlayerCreepKills
-integer array udg_RowToPlayer
-integer array udg_PlayerToRow
-multiboard udg_MultiboardBig= null
-multiboard udg_MultiboardNormal= null
-integer array udg_PlayerSurvivedTime
-integer udg_PlayerCount= 0
-fogmodifier udg__VM_Test= null
-unit udg_BlightDummy= null
-integer udg_DetectRemoveAbility= 0
-integer udg_DetectTransformAbility= 0
-real udg_WorldMaxX= 0
-real udg_WorldMaxY= 0
-unit array udg_CargoTransportUnit
-group array udg_CargoTransportGroup
-integer udg_UDexMax= 0
-integer array udg_CheckDeathList
-integer udg_UDexLastRecycled= 0
-integer array udg_UDexPrev
-integer array udg_UDexNext
-integer udg_UDex= 0
-unit array udg_UDexUnits
-unit array udg_SummonerOfUnit
-timer udg_CheckDeathTimer= null
-real udg_UnitIndexEvent= 0
-real udg_CargoEvent= 0
-real udg_DeathEvent= 0
-real udg_UnitTypeEvent= 0
-boolean array udg_IsUnitAlive
-boolean array udg_IsUnitBeingUnloaded
-boolean array udg_IsUnitNew
-boolean array udg_IsUnitReincarnating
-boolean array udg_IsUnitRemoved
-boolean udg_UnitIndexerEnabled= false
-unit array udg_KillerOfUnit
-boolean array udg_IsUnitPreplaced
-hashtable udg_TimerHash= null
 
     // Generated
-rect gg_rct_TavernArea= null
 rect gg_rct_Volcano1= null
 rect gg_rct_Volcano2= null
 rect gg_rct_Volcano3= null
 rect gg_rct_Volcano4= null
 rect gg_rct_Volcano5= null
-trigger gg_trg_Map_Initialization= null
-trigger gg_trg_Cheats= null
-trigger gg_trg_Credits= null
 trigger gg_trg_Start_Turning= null
 trigger gg_trg_Turning_1= null
-trigger gg_trg_Terrain_Initialization= null
-trigger gg_trg_Terrain_Randomizer= null
-trigger gg_trg_Terrain_Generator= null
-trigger gg_trg_Terrain_Old= null
-trigger gg_trg_Untitled_Trigger_001= null
-trigger gg_trg_TestTeleport= null
-trigger gg_trg_SpellBooks= null
-trigger gg_trg_Gameplay= null
-trigger gg_trg_Test= null
-trigger gg_trg_MapTerrain= null
-trigger gg_trg_MapUnits= null
-trigger gg_trg_MapDestructibles= null
-trigger gg_trg_SetupHeroes= null
-trigger gg_trg_Circle= null
-trigger gg_trg_Score= null
-trigger gg_trg_MB_Command= null
-trigger gg_trg_Player= null
-trigger gg_trg_Circle_Initialization= null
-trigger gg_trg_First_Circle= null
-trigger gg_trg_Next_Circle= null
-trigger gg_trg_Next_Circle_Starts= null
-trigger gg_trg_Circle_Message= null
-trigger gg_trg_Circle_Start_Moving= null
-trigger gg_trg_Circle_Move= null
-trigger gg_trg_Circle_Draw= null
-trigger gg_trg_Select_Hero= null
-trigger gg_trg_Select_Hero_Copy= null
-trigger gg_trg_First_Round_Start= null
-trigger gg_trg_Choose_Location= null
-trigger gg_trg_Boss= null
-trigger gg_trg_Barrel= null
-trigger gg_trg_DropSystem= null
-trigger gg_trg_DropTable= null
-trigger gg_trg_UnitTable= null
-trigger gg_trg_Check_Circle= null
-trigger gg_trg_SetUnitMaxState= null
-trigger gg_trg_BonusMod= null
-trigger gg_trg_BonusModCreator= null
-trigger gg_trg_SetUnitMaxStateCreator= null
-trigger gg_trg_TimerUtils= null
-trigger gg_trg_GeneralLibrary= null
-trigger gg_trg_TemporaryAbility= null
-trigger gg_trg_DummyCaster= null
-trigger gg_trg_DummyRecycler_vJASS= null
-trigger gg_trg_Missile= null
-trigger gg_trg_ItemTable= null
-trigger gg_trg_Inventory= null
-trigger gg_trg_Select= null
-trigger gg_trg_InstantAbilities= null
-trigger gg_trg_Stormbolt= null
-trigger gg_trg_Shadow_Strike= null
-trigger gg_trg_Shockwave= null
-trigger gg_trg_Refelctor= null
-trigger gg_trg_Speed_Boost= null
-trigger gg_trg_Invisibility= null
-trigger gg_trg_ThunderClap= null
-trigger gg_trg_Mortar= null
-trigger gg_trg_Shrinking_Potion= null
-trigger gg_trg_Hex= null
-trigger gg_trg_Untitled_Trigger_002= null
-trigger gg_trg_Unit_Event_Config= null
-trigger gg_trg_Unit_Event= null
-trigger gg_trg_IsDestructableTree= null
-trigger gg_trg_TerrainPathability= null
-trigger gg_trg_KnockbackSimple= null
 unit gg_unit_h005_0095= null
 unit gg_unit_h00C_0123= null
 unit gg_unit_h00U_0293= null
 unit gg_unit_h00U_0294= null
+trigger gg_trg_TestTeleport= null
 
 
 //JASSHelper struct globals:
@@ -177,7 +32,7 @@ endglobals
 // 
 //   Warcraft III map script
 //   Generated by the Warcraft III World Editor
-//   Date: Tue Feb 27 12:18:53 2018
+//   Date: Mon Mar 05 01:11:16 2018
 //   Map Author: MooProductions
 // 
 //===========================================================================
@@ -191,220 +46,10 @@ endglobals
 
 function InitGlobals takes nothing returns nothing
     local integer i= 0
-    set udg_Circle_Current_R=0
-    set udg_Circle_Next_R=0
-    set udg_Circle_Current_X=0
-    set udg_Circle_Current_Y=0
-    set udg_Circle_Next_X=0
-    set udg_Circle_Next_Y=0
-    set udg_Circle_Move_Speed=0
-    set udg_Circle_Draw_R=0
-    set udg_Circle_Draw_X=0
-    set udg_Circle_Draw_Y=0
-    set udg_Circle_Factor=0
     set udg_Temp_Real=0
-    set udg_TimerCircleMove=CreateTimer()
-    set udg_TimerCircleMessage=CreateTimer()
-    set udg_Round=0
-    set udg_TerrainX=0
-    set udg_TerrainY=0
-    set i=0
-    loop
-        exitwhen ( i > 1 )
-        set udg_Round_Duration[i]=0
-        set i=i + 1
-    endloop
-
-    set i=0
-    loop
-        exitwhen ( i > 1 )
-        set udg_Round_Message_Delay[i]=0
-        set i=i + 1
-    endloop
-
-    set udg_TimerRoundStart=CreateTimer()
     set udg_Temp_Group=CreateGroup()
-    set i=0
-    loop
-        exitwhen ( i > 12 )
-        set udg_PlayerStatus[i]=0
-        set i=i + 1
-    endloop
-
-    set udg_Circle_Center_Direction=0
-    set udg_Circle_Radius_Difference=0
-    set udg_Circle_Center_Distance=0
-    set i=0
-    loop
-        exitwhen ( i > 12 )
-        set udg_PlayerHero[i]=null
-        set i=i + 1
-    endloop
-
-    set udg_PlayerHeroes=CreateGroup()
     set udg_PlayerGroup=CreateForce()
     set udg_ObserverGroup=CreateForce()
-    set i=0
-    loop
-        exitwhen ( i > 12 )
-        set udg_HotkeyHero1[i]=null
-        set i=i + 1
-    endloop
-
-    set i=0
-    loop
-        exitwhen ( i > 12 )
-        set udg_HotkeyHero2[i]=null
-        set i=i + 1
-    endloop
-
-    set i=0
-    loop
-        exitwhen ( i > 12 )
-        set udg_HotkeyHero3[i]=null
-        set i=i + 1
-    endloop
-
-    set udg_MapLoading=false
-    set udg_TimerRoundEnd=CreateTimer()
-    set i=0
-    loop
-        exitwhen ( i > 12 )
-        set udg_PlayerScore[i]=0
-        set i=i + 1
-    endloop
-
-    set i=0
-    loop
-        exitwhen ( i > 12 )
-        set udg_PlayerDeaths[i]=0
-        set i=i + 1
-    endloop
-
-    set i=0
-    loop
-        exitwhen ( i > 12 )
-        set udg_PlayerHeroKills[i]=0
-        set i=i + 1
-    endloop
-
-    set i=0
-    loop
-        exitwhen ( i > 12 )
-        set udg_PlayerBossKills[i]=0
-        set i=i + 1
-    endloop
-
-    set i=0
-    loop
-        exitwhen ( i > 12 )
-        set udg_PlayerCreepKills[i]=0
-        set i=i + 1
-    endloop
-
-    set i=0
-    loop
-        exitwhen ( i > 12 )
-        set udg_RowToPlayer[i]=0
-        set i=i + 1
-    endloop
-
-    set i=0
-    loop
-        exitwhen ( i > 12 )
-        set udg_PlayerToRow[i]=0
-        set i=i + 1
-    endloop
-
-    set i=0
-    loop
-        exitwhen ( i > 12 )
-        set udg_PlayerSurvivedTime[i]=0
-        set i=i + 1
-    endloop
-
-    set udg_PlayerCount=0
-    set udg_WorldMaxX=0
-    set udg_WorldMaxY=0
-    set i=0
-    loop
-        exitwhen ( i > 1 )
-        set udg_CargoTransportGroup[i]=CreateGroup()
-        set i=i + 1
-    endloop
-
-    set udg_UDexMax=0
-    set i=0
-    loop
-        exitwhen ( i > 1 )
-        set udg_CheckDeathList[i]=0
-        set i=i + 1
-    endloop
-
-    set udg_UDexLastRecycled=0
-    set i=0
-    loop
-        exitwhen ( i > 1 )
-        set udg_UDexPrev[i]=0
-        set i=i + 1
-    endloop
-
-    set i=0
-    loop
-        exitwhen ( i > 1 )
-        set udg_UDexNext[i]=0
-        set i=i + 1
-    endloop
-
-    set udg_UDex=0
-    set udg_CheckDeathTimer=CreateTimer()
-    set udg_UnitIndexEvent=0
-    set udg_CargoEvent=0
-    set udg_DeathEvent=0
-    set udg_UnitTypeEvent=0
-    set i=0
-    loop
-        exitwhen ( i > 1 )
-        set udg_IsUnitAlive[i]=false
-        set i=i + 1
-    endloop
-
-    set i=0
-    loop
-        exitwhen ( i > 1 )
-        set udg_IsUnitBeingUnloaded[i]=false
-        set i=i + 1
-    endloop
-
-    set i=0
-    loop
-        exitwhen ( i > 1 )
-        set udg_IsUnitNew[i]=false
-        set i=i + 1
-    endloop
-
-    set i=0
-    loop
-        exitwhen ( i > 1 )
-        set udg_IsUnitReincarnating[i]=false
-        set i=i + 1
-    endloop
-
-    set i=0
-    loop
-        exitwhen ( i > 1 )
-        set udg_IsUnitRemoved[i]=false
-        set i=i + 1
-    endloop
-
-    set udg_UnitIndexerEnabled=false
-    set i=0
-    loop
-        exitwhen ( i > 1 )
-        set udg_IsUnitPreplaced[i]=false
-        set i=i + 1
-    endloop
-
 endfunction
 
 //***************************************************************************
@@ -426,6 +71,7 @@ function CreateNeutralHostile takes nothing returns nothing
     set u=CreateUnit(p, 'n009', 14736.7, 273.3, 262.077)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n014', 27020.8, - 158.5, 287.189)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n00Z', 15125.1, 26427.7, 218.898)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n005', 16397.5, 14918.5, 222.722)
@@ -463,6 +109,7 @@ function CreateNeutralHostile takes nothing returns nothing
     set u=CreateUnit(p, 'n00F', 17677.6, - 659.7, 83.729)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n015', 17633.2, 6480.2, 229.470)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n002', - 17.5, 4748.9, 284.412)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n002', 141.8, 4642.2, 64.997)
@@ -606,7 +253,9 @@ function CreateNeutralHostile takes nothing returns nothing
     set u=CreateUnit(p, 'n00C', 21464.7, 15423.1, 189.487)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n007', 29470.6, 70.3, 186.070)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n004', 28300.5, 6290.2, 14.821)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n00H', 23465.1, 4817.6, 266.768)
     call SetUnitColor(u, ConvertPlayerColor(0))
     call SetUnitAcquireRange(u, 200.0)
@@ -734,6 +383,7 @@ function CreateNeutralHostile takes nothing returns nothing
     call SetUnitColor(u, ConvertPlayerColor(3))
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n004', 27921.4, 6917.0, 354.474)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n00V', 16413.1, 25553.7, 265.647)
     call SetUnitColor(u, ConvertPlayerColor(3))
     call SetUnitAcquireRange(u, 200.0)
@@ -773,9 +423,6 @@ function CreateNeutralHostile takes nothing returns nothing
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n00X', 15604.8, 12353.1, 303.923)
     call SetUnitColor(u, ConvertPlayerColor(3))
-    call SetUnitAcquireRange(u, 200.0)
-    set u=CreateUnit(p, 'n00Y', 7558.6, 14567.6, 81.939)
-    call SetUnitColor(u, ConvertPlayerColor(0))
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n00Y', 12030.8, 26737.3, 314.636)
     call SetUnitColor(u, ConvertPlayerColor(0))
@@ -845,17 +492,107 @@ function CreateNeutralHostile takes nothing returns nothing
     set u=CreateUnit(p, 'n013', 843.2, 4782.0, 276.543)
     call SetUnitColor(u, ConvertPlayerColor(10))
     call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n017', 3112.2, 7166.2, 349.815)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n004', 27046.8, 7066.0, 143.475)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n004', 26576.7, 6408.8, 0.747)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n004', 26987.1, 5776.7, 106.724)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n004', 28498.1, 5572.8, 97.550)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n004', 28970.6, 4920.9, 324.040)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n004', 29643.4, 6687.8, 26.010)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n004', 29041.6, 7990.8, 56.823)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n004', 28596.2, 7529.8, 246.321)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n004', 27766.6, 7916.9, 58.625)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n017', 3248.9, 7023.6, 105.648)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n017', 3002.2, 6864.8, 312.724)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n017', 3305.3, 6363.5, 290.553)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n017', 3608.9, 6628.8, 273.788)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n017', 3928.5, 6445.4, 20.413)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n017', 3810.5, 6085.2, 324.019)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n017', 3594.9, 6973.2, 59.778)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n00U', 6903.5, 5696.5, 264.855)
+    call SetUnitColor(u, ConvertPlayerColor(0))
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n00U', 8152.4, 2645.3, 121.139)
+    call SetUnitColor(u, ConvertPlayerColor(0))
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n00U', 4046.7, 4214.9, 273.216)
+    call SetUnitColor(u, ConvertPlayerColor(0))
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n00U', 5790.8, 3144.4, 337.400)
+    call SetUnitColor(u, ConvertPlayerColor(0))
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n00U', 6219.6, 1869.3, 1.099)
+    call SetUnitColor(u, ConvertPlayerColor(0))
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n011', 6112.0, 2160.3, 125.951)
+    call SetUnitColor(u, ConvertPlayerColor(6))
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n011', 5400.0, 3615.7, 347.245)
+    call SetUnitColor(u, ConvertPlayerColor(6))
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n011', 4608.4, 4641.1, 330.061)
+    call SetUnitColor(u, ConvertPlayerColor(6))
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n011', 3721.3, 4760.6, 122.908)
+    call SetUnitColor(u, ConvertPlayerColor(6))
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n011', 6769.4, 5500.0, 5.603)
+    call SetUnitColor(u, ConvertPlayerColor(6))
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n011', 8028.0, 3739.8, 287.005)
+    call SetUnitColor(u, ConvertPlayerColor(6))
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n011', 8499.3, 1709.7, 281.325)
+    call SetUnitColor(u, ConvertPlayerColor(6))
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n004', 5298.9, 7870.1, 69.677)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n004', 4647.2, 8420.0, 267.734)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n004', 5633.4, 6807.9, 271.162)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n004', 6069.4, 7784.0, 114.745)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n004', 6576.6, 6919.3, 341.334)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n004', 6853.7, 7868.8, 277.084)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n010', 20128.8, 20170.7, 292.421)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n00Z', 20279.4, 20306.4, 207.681)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n00L', 21480.4, 17605.1, 254.824)
+    call SetUnitColor(u, ConvertPlayerColor(1))
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n00H', 21536.7, 17517.6, 219.437)
+    call SetUnitColor(u, ConvertPlayerColor(0))
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n00K', 21403.4, 17533.0, 247.035)
+    call SetUnitColor(u, ConvertPlayerColor(11))
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n00C', 23478.0, 20229.4, 302.177)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n00C', 24541.8, 19133.2, 82.246)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'n00C', 22734.3, 21731.7, 192.596)
+    call SetUnitAcquireRange(u, 200.0)
 endfunction
 
 //===========================================================================
@@ -941,12 +678,11 @@ function CreateNeutralPassiveBuildings takes nothing returns nothing
     call SetUnitColor(u, ConvertPlayerColor(0))
     set u=CreateUnit(p, 'h00F', 24000.0, 6080.0, 270.000)
     call SetUnitColor(u, ConvertPlayerColor(0))
-    set u=CreateUnit(p, 'h00G', 21760.0, 18304.0, 270.000)
-    call SetUnitColor(u, ConvertPlayerColor(6))
     set u=CreateUnit(p, 'h00U', 17344.0, 20480.0, 270.000)
     call SetUnitColor(u, ConvertPlayerColor(3))
     set u=CreateUnit(p, 'h00M', 24576.0, 2304.0, 270.000)
     set u=CreateUnit(p, 'h00M', 23616.0, 3200.0, 270.000)
+    set u=CreateUnit(p, 'n00D', 2912.0, 7328.0, 270.000)
     set gg_unit_h00U_0293=CreateUnit(p, 'h00U', 19776.0, 22656.0, 270.000)
     call SetUnitColor(gg_unit_h00U_0293, ConvertPlayerColor(3))
     set gg_unit_h00U_0294=CreateUnit(p, 'h00U', 16448.0, 25216.0, 91.641)
@@ -1017,6 +753,8 @@ function CreateNeutralPassiveBuildings takes nothing returns nothing
     call SetUnitColor(u, ConvertPlayerColor(3))
     set u=CreateUnit(p, 'h012', 17088.0, 20800.0, 270.000)
     call SetUnitColor(u, ConvertPlayerColor(3))
+    set u=CreateUnit(p, 'n00D', 3552.0, 6240.0, 270.000)
+    set u=CreateUnit(p, 'n016', 3424.0, 7008.0, 270.000)
     set u=CreateUnit(p, 'h01H', 16064.0, 25216.0, 270.000)
     call SetUnitColor(u, ConvertPlayerColor(3))
     set u=CreateUnit(p, 'h01G', 18240.0, 25088.0, 270.000)
@@ -1041,6 +779,8 @@ function CreateNeutralPassiveBuildings takes nothing returns nothing
     call SetUnitColor(u, ConvertPlayerColor(3))
     set u=CreateUnit(p, 'h01H', 13952.0, 24064.0, 270.000)
     call SetUnitColor(u, ConvertPlayerColor(3))
+    set u=CreateUnit(p, 'n016', 3104.0, 6496.0, 270.000)
+    set u=CreateUnit(p, 'n016', 4256.0, 6304.0, 270.000)
 endfunction
 
 //===========================================================================
@@ -1140,9 +880,11 @@ function CreateNeutralPassive takes nothing returns nothing
     set u=CreateUnit(p, 'n00E', 10163.4, 11442.6, 279.741)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 468.3, 12127.7, 18.720)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'ngz3', 25365.9, 28876.3, 196.826)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 945.9, 16604.4, 339.670)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'nshe', 24692.7, 28358.0, 262.460)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'nshe', 24730.2, 28394.3, 161.724)
@@ -1188,17 +930,29 @@ function CreateNeutralPassive takes nothing returns nothing
     set u=CreateUnit(p, 'nech', 26958.2, 21065.8, 322.400)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 648.4, 20210.4, 289.916)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'nrat', 807.9, 8272.2, 253.924)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 93.3, 21556.0, 39.266)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', - 194.1, 24640.7, 61.987)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'h00L', 27936.9, 23773.6, 67.623)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 201.9, 26274.3, 221.206)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 1127.3, 28549.0, 191.124)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 2241.3, 26616.2, 98.254)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 3758.1, 28595.6, 150.199)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 4760.7, 26816.9, 83.663)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 5877.5, 28903.0, 331.226)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 9770.2, 28147.8, 224.304)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'nech', 11407.8, 17850.0, 63.635)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'nech', 11348.4, 17749.5, 132.323)
@@ -1218,15 +972,21 @@ function CreateNeutralPassive takes nothing returns nothing
     set u=CreateUnit(p, 'nrac', 15393.8, 6450.2, 308.352)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 8513.7, 24994.8, 81.071)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 11487.4, 23674.3, 75.369)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'nfro', 14568.6, 7425.8, 72.842)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'nfro', 14435.9, 7805.6, 173.238)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 8522.4, 20915.6, 108.823)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 6296.2, 24900.1, 84.213)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 2734.7, 22751.1, 49.297)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 4785.4, 18575.7, 219.503)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'nech', 23327.2, 28319.5, 65.437)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'nech', 23335.2, 28240.1, 101.099)
@@ -1279,9 +1039,9 @@ function CreateNeutralPassive takes nothing returns nothing
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'nder', 20729.9, 29193.1, 242.893)
     call SetUnitAcquireRange(u, 200.0)
-    set u=CreateUnit(p, 'h00O', 21552.6, 17434.6, 234.200)
+    set u=CreateUnit(p, 'h00L', 24968.4, 23321.6, 67.623)
     call SetUnitAcquireRange(u, 200.0)
-    set u=CreateUnit(p, 'h00O', 21178.3, 17566.4, 122.170)
+    set u=CreateUnit(p, 'h00L', 27726.6, 20550.3, 67.623)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'nech', 10486.7, 17828.4, 186.729)
     call SetUnitAcquireRange(u, 200.0)
@@ -1314,6 +1074,7 @@ function CreateNeutralPassive takes nothing returns nothing
     set u=CreateUnit(p, 'n00E', 8715.7, 8931.7, 295.168)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 2896.7, 21482.0, 175.512)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n00E', 11025.5, 14420.8, 141.486)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n00E', 13095.9, 18922.4, 288.609)
@@ -1333,7 +1094,9 @@ function CreateNeutralPassive takes nothing returns nothing
     set u=CreateUnit(p, 'n00E', 13370.1, 5884.0, 82.125)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 6983.9, 21093.2, 237.081)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 2982.5, 19290.4, 198.364)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'n003', 15524.5, 12837.6, 250.968)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'nder', 28789.6, 14486.4, 309.560)
@@ -1369,68 +1132,137 @@ function CreateNeutralPassive takes nothing returns nothing
     set u=CreateUnit(p, 'nrac', 11083.0, 28963.3, 253.363)
     call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 22744.3, 15920.9, 47.122)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 27548.9, 14550.7, 90.442)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 2718.1, 12996.6, 145.343)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 3304.2, 16448.1, 285.302)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 5921.5, 17775.1, 331.149)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 4853.9, 14300.1, 198.595)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 8522.0, 15615.3, 320.129)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 12731.5, 28091.6, 186.872)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 20088.0, 28583.0, 286.082)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 17922.9, 25450.7, 259.307)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 22728.5, 23710.8, 285.258)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 19400.4, 21353.1, 185.147)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 15581.0, 20118.9, 287.884)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 11998.3, 19392.6, 9.866)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 10860.5, 16784.8, 321.360)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 8883.3, 18085.3, 318.416)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 6815.6, 18875.6, 115.107)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 6688.3, 13390.5, 98.078)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 4082.8, 9952.3, 39.255)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 7702.5, 9187.4, 226.853)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 9302.2, 11142.4, 210.801)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 2010.3, 8302.6, 195.431)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 513.8, 6743.5, 112.273)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 1811.9, 3633.5, 335.412)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', - 203.6, 407.1, 158.329)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 4522.0, - 1086.5, 17.568)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 3926.0, 2045.8, 273.645)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 2654.0, - 722.3, 336.675)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 5645.1, 953.0, 115.371)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 4221.8, 3419.7, 169.294)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 5970.0, 6265.7, 112.921)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 8349.7, 1019.7, 17.875)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 11147.4, - 854.3, 91.420)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 9747.1, 7473.4, 120.831)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 11921.2, 11325.8, 167.667)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 11953.4, 5713.0, 343.267)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 15722.4, 376.5, 26.676)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 19621.9, - 67.1, 215.635)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 18877.4, 4477.1, 279.764)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 22334.3, 2837.8, 348.728)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 15744.8, 8875.9, 326.524)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 14165.7, 5209.5, 195.683)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 13374.0, 13459.9, 312.966)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 18728.9, 14568.5, 64.920)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 16386.4, 17748.2, 120.216)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 18945.5, 16838.8, 191.871)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 18012.5, 9790.2, 330.830)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 19960.2, 8463.6, 148.155)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 19715.8, 6415.9, 271.645)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 22210.4, 10130.5, 47.100)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 21970.7, 13690.6, 293.245)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 26942.2, 9436.3, 72.369)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 27737.4, 11907.4, 76.863)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 23799.9, 12385.6, 304.660)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 24603.9, 8811.0, 353.595)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 25213.7, 6293.7, 141.212)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 22474.8, 6599.2, 115.843)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 25642.8, 3469.2, 324.590)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 28485.1, 4109.8, 73.171)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 25762.9, 1114.9, 334.797)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 21903.4, 19408.3, 104.121)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 24986.3, 17431.9, 291.872)
+    call SetUnitAcquireRange(u, 200.0)
     set u=CreateUnit(p, 'h00L', 27069.8, 24729.1, 67.623)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'h00L', 28366.0, 18230.3, 67.623)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'h00L', 25590.1, 20090.4, 67.623)
+    call SetUnitAcquireRange(u, 200.0)
+    set u=CreateUnit(p, 'h00L', 7456.6, 4507.6, 67.623)
+    call SetUnitAcquireRange(u, 200.0)
 endfunction
 
 //===========================================================================
@@ -1459,7 +1291,6 @@ endfunction
 function CreateRegions takes nothing returns nothing
     local weathereffect we
 
-    set gg_rct_TavernArea=Rect(10816.0, 28416.0, 12192.0, 29536.0)
     set gg_rct_Volcano1=Rect(27072.0, 22016.0, 28512.0, 22912.0)
     set we=AddWeatherEffect(gg_rct_Volcano1, 'FDrh')
     call EnableWeatherEffect(we, true)
@@ -1490,18 +1321,6 @@ endfunction
 //*  Triggers
 //*
 //***************************************************************************
-
-//===========================================================================
-// Trigger: Map Initialization
-//===========================================================================
-function Trig_Map_Initialization_Actions takes nothing returns nothing
-endfunction
-
-//===========================================================================
-function InitTrig_Map_Initialization takes nothing returns nothing
-    set gg_trg_Map_Initialization=CreateTrigger()
-    call TriggerAddAction(gg_trg_Map_Initialization, function Trig_Map_Initialization_Actions)
-endfunction
 
 //===========================================================================
 // Trigger: Start Turning
@@ -1623,15 +1442,35 @@ function InitTrig_Turning_1 takes nothing returns nothing
 endfunction
 
 //===========================================================================
-function InitCustomTriggers takes nothing returns nothing
-    call InitTrig_Map_Initialization()
-    call InitTrig_Start_Turning()
-    call InitTrig_Turning_1()
+// Trigger: TestTeleport
+//===========================================================================
+function Trig_TestTeleport_Conditions takes nothing returns boolean
+    if ( not ( CountPlayersInForceBJ(udg_PlayerGroup) == 1 ) ) then
+        return false
+    endif
+    if ( not ( CountPlayersInForceBJ(udg_ObserverGroup) == 0 ) ) then
+        return false
+    endif
+    return true
+endfunction
+
+function Trig_TestTeleport_Actions takes nothing returns nothing
+    call UnitAddAbilityBJ('A01J', udg_PlayerHero[0])
 endfunction
 
 //===========================================================================
-function RunInitializationTriggers takes nothing returns nothing
-    call ConditionalTriggerExecute(gg_trg_Map_Initialization)
+function InitTrig_TestTeleport takes nothing returns nothing
+    set gg_trg_TestTeleport=CreateTrigger()
+    call TriggerRegisterPlayerChatEvent(gg_trg_TestTeleport, Player(0), "warden", true)
+    call TriggerAddCondition(gg_trg_TestTeleport, Condition(function Trig_TestTeleport_Conditions))
+    call TriggerAddAction(gg_trg_TestTeleport, function Trig_TestTeleport_Actions)
+endfunction
+
+//===========================================================================
+function InitCustomTriggers takes nothing returns nothing
+    call InitTrig_Start_Turning()
+    call InitTrig_Turning_1()
+    call InitTrig_TestTeleport()
 endfunction
 
 //***************************************************************************
@@ -1829,6 +1668,7 @@ endfunction
 function main takes nothing returns nothing
     call SetCameraBounds(- 1280.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), - 1536.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM), 29952.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 29696.0 - GetCameraMargin(CAMERA_MARGIN_TOP), - 1280.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 29696.0 - GetCameraMargin(CAMERA_MARGIN_TOP), 29952.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), - 1536.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM))
     call SetDayNightModels("Environment\\DNC\\DNCAshenvale\\DNCAshenvaleTerrain\\DNCAshenvaleTerrain.mdl", "Environment\\DNC\\DNCAshenvale\\DNCAshenvaleUnit\\DNCAshenvaleUnit.mdl")
+    call SetWaterBaseColor(255, 255, 255, 255)
     call NewSoundEnvironment("Default")
     call SetAmbientDaySound("AshenvaleDay")
     call SetAmbientNightSound("AshenvaleNight")
@@ -1840,7 +1680,6 @@ function main takes nothing returns nothing
 
     call InitGlobals()
     call InitCustomTriggers()
-    call ConditionalTriggerExecute(gg_trg_Map_Initialization) // INLINED!!
 
 endfunction
 

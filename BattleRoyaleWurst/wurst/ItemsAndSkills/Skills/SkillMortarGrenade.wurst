@@ -1,0 +1,38 @@
+package SkillMortarGrenade
+
+import SkillGeneration
+import initlater RuntimeInitialize
+import initlater PlayerControl
+
+public constant SKILL_MORTAR_GRENADE = compiletime(newSkill("Mortar Grenade", 0, false))
+
+constant DETECTION_DUMMY = compiletime(ArtilleryDetection.createDetectionDummy())
+constant ARTILLERY_DUMMY = compiletime(ArtilleryDetection.createArtilleryDummy(80, Abilities.mortarMissile, 1200, 0.3, DETECTION_DUMMY))
+
+@compiletime
+public function setupMortarGrenade()
+
+    if compiletime
+        SKILL_MORTAR_GRENADE.getSkillObject()
+            ..setDescription("Fires a mortar Grebade at the target location.")
+            ..setIcon(Icons.bTNFlare)
+            ..setManaCost(0)
+            ..setRange(2000)
+            ..setTargetType(CHANNEL_POINT_TARGET)
+            ..setAreaOfEffect(250)
+
+    else
+        ArtilleryDetection.registerArtilleryHit(DETECTION_DUMMY, (unit detectionUnit) -> (begin
+            let g = CreateGroup()
+            g.enumUnitsInRange(detectionUnit.getPos(), 250)
+            for unit u in g
+                if u.isTargetable(detectionUnit.getOwner(), true, true)
+                    let hero = playerHero[detectionUnit.getOwner().getId()]
+                    hero.damageTarget(u, 50)
+            g.destr()
+        end))
+        SKILL_MORTAR_GRENADE.attachCode( (unit caster, unit _target, vec2 pos) -> (begin
+            ArtilleryDetection.fireArtillery(caster.getOwner(), ARTILLERY_DUMMY, caster.getPos(), pos)
+        end))
+
+    

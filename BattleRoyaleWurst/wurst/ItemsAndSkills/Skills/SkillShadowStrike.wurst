@@ -1,0 +1,53 @@
+package SkillShadowStrike
+
+import SkillGeneration
+import initlater RuntimeInitialize
+import ClosureTimers
+import StandardTextTags
+
+public constant SKILL_SHADOW_STRIKE = compiletime(newSkill("Shadow Strike", 5, false))
+
+constant ABILITY_SHADOW_STRIKE = compiletime(ABIL_ID_GEN.next())
+constant BUFF_SHADOW_STRIKE = new BuffType(ABILITY_SHADOW_STRIKE, "shadowstrike", 'BEsh', false, true)
+
+@compiletime
+public function setupShadowStrike()
+    real dur = 4.5
+    if compiletime
+        SKILL_SHADOW_STRIKE.getSkillObject()
+            ..setDescription("Hurls a poisoned dagger which deals large initial damage, and then deals damage over time")
+            ..setIcon(Icons.bTNShadowStrike)
+            ..setManaCost(0)
+            ..setRange(500)
+            ..setTargetType(CHANNEL_POINT_TARGET)
+        new AbilityDefinitionWardenShadowStrike(ABILITY_SHADOW_STRIKE)
+            ..setDummySkill()
+            ..setDecayingDamage(1, 0)
+            ..setInitialDamage(1, 0)
+            ..setCastingTime(1, 30)
+
+    else
+        SKILL_SHADOW_STRIKE.attachCode( (unit caster, unit _target, vec2 pos) -> (begin
+            new Missile(caster, caster.getPos3with(80), 800, caster.getPos().angleTo(pos), Abilities.shadowStrikeMissile)
+                ..setReflectFunction( defaultReflect )
+                ..hitOnce()
+                ..setMaxRange(600)
+                ..setHitCondition((Missile missile, unit missileTarget) -> (begin
+                    return missileTarget.isTargetable(missile.getOwner().getOwner(), false, true)
+                end) )
+                ..setHitFunction( (Missile missile, unit missileTarget) -> (begin
+                    caster.damageTarget(missileTarget, 25)
+                    createShadowStrikeTextTag(missileTarget, 25, true)
+                    new Buff(missileTarget, caster, dur, BUFF_SHADOW_STRIKE, 1)
+                    doPeriodically(1.5, (CallbackPeriodic cb) -> (begin
+                        if not BuffList.hasBuffType(missileTarget, BUFF_SHADOW_STRIKE)
+                            destroy cb
+                        caster.damageTarget(missileTarget, 10)
+                        createShadowStrikeTextTag(missileTarget, 10, false)
+                    end) )
+                    missile.destr()
+                end))
+            debugPrint("stormbolt")
+        end))
+
+    

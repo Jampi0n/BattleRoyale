@@ -1,0 +1,39 @@
+package SkillSpeedBoost
+
+import SkillGeneration
+import initlater RuntimeInitialize
+
+public constant SKILL_SPEED_BOOST = compiletime(newSkill("Speed Boost", 8, true))
+
+constant BUFF_SPEED_BOOST = new BuffType(true, true)
+constant BUFF_ID_SPEED_BOOST = compiletime(createAuraBuff("Speed Boost", "Increases movement speed.", Icons.bTNAnimalWarTraining))
+constant ABILITY_ID_SPEED_BOOST = compiletime(ABIL_ID_GEN.next())
+
+@compiletime
+public function setupSpeedBoost()
+    real dur = 4
+
+    if compiletime
+        SKILL_SPEED_BOOST.getSkillObject()
+            ..setDescription("Increases movement speed for "+dur.toInt().toString()+" seconds.")
+            ..setIcon(Icons.bTNAnimalWarTraining)
+            ..setManaCost(0)
+
+        new AbilityDefinitionUnholyAuracreep(ABILITY_ID_SPEED_BOOST)
+            ..setArtTarget(Abilities.speedTarget)
+            ..setTargetsAllowed(1, "invulnerable,self,vulnerable")
+            ..setAreaofEffect(1, 1)
+            ..setMovementSpeedIncrease(1, 10)
+            ..setLifeRegenerationIncrease(1, 0)
+            ..setBuffs(1, int2fourchar(BUFF_ID_SPEED_BOOST))
+
+    else
+        let abilityList = new LinkedList<int>
+            ..add(ABILITY_ID_SPEED_BOOST)
+        BUFF_SPEED_BOOST.setup(abilityList, BUFF_ID_SPEED_BOOST)
+
+        SKILL_SPEED_BOOST.attachCode( (unit caster, unit _target, vec2 _pos) -> (begin
+            new Buff(caster, caster, dur, BUFF_SPEED_BOOST, 1)
+        end))
+
+    

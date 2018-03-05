@@ -1,0 +1,32 @@
+package SkillReflector
+
+import SkillGeneration
+import initlater RuntimeInitialize
+
+public constant SKILL_REFLECTOR = compiletime(newSkill("Reflector", 3, true))
+
+public constant BUFF_SKILL_REFLECTOR = new BuffType(true, true)
+constant BUFF_ID_SKILL_REFLECTOR = compiletime(createAuraBuff("Reflector", "Reflects incoming missiles.", Icons.bTNAnimalWarTraining))
+constant ABILITY_ID_SKILL_REFLECTOR = compiletime(createPositiveBuffAbility(1, BUFF_ID_SKILL_REFLECTOR, Abilities.manaShieldCaster))
+
+@compiletime
+public function setupReflector()
+    real dur = 1.5
+
+    if compiletime
+        SKILL_REFLECTOR.getSkillObject()
+            ..setDescription("Reflects incoming missiles.")
+            ..setIcon(Icons.bTNNeutralManaShield)
+            ..setManaCost(0)
+
+
+    else
+        let abilityList = new LinkedList<int>
+            ..add(ABILITY_ID_SKILL_REFLECTOR)
+        BUFF_SKILL_REFLECTOR.setup(abilityList, BUFF_ID_SKILL_REFLECTOR)
+
+        SKILL_REFLECTOR.attachCode( (unit caster, unit _target, vec2 _pos) -> (begin
+            new Buff(caster, caster, dur, BUFF_SKILL_REFLECTOR, 1)
+        end))
+
+    

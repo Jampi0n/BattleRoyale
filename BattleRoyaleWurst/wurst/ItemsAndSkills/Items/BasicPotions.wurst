@@ -15,7 +15,7 @@ public function setupBasicPotions()
         new AbilityDefinitionPotionofRejuvI(abilId)
             ..setAllowWhenFull(1, AllowWhenFull.NEVER)
             ..setManaRegenerated(1, 0)
-            ..setLifeRegenerated(1, 25)
+            ..setLifeRegenerated(1, 50)
             ..setCooldown(1, 1)
             ..setDurationHero(1, 5)
 

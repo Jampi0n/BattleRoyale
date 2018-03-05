@@ -1,0 +1,37 @@
+package SkillShockwave
+
+import SkillGeneration
+import initlater RuntimeInitialize
+
+public constant SKILL_SHOCKWAVE = compiletime(newSkill("Shockwave", 2, false))
+
+
+
+@compiletime
+public function setupShockwave()
+
+    if compiletime
+        SKILL_SHOCKWAVE.getSkillObject()
+            ..setDescription("A wave of force that ripples out from the Hero, causing damage to land units in a line.")
+            ..setIcon(Icons.bTNShockWave)
+            ..setManaCost(0)
+            ..setRange(1200)
+            ..setTargetType(CHANNEL_POINT_TARGET)
+
+    else
+        SKILL_SHOCKWAVE.attachCode( (unit caster, unit _target, vec2 pos) -> (begin
+            new Missile(caster, caster.getPos3with(80), 1000, caster.getPos().angleTo(pos), Abilities.shockwaveMissile)
+                ..setReflectFunction( defaultReflect )
+                ..hitOnce()
+                ..setMaxRange(1300)
+                ..setSize(150)
+                ..setHitCondition((Missile missile, unit missileTarget) -> (begin
+                    return missileTarget.isTargetable(missile.getOwner().getOwner(), false, true)
+                end) )
+                ..setHitFunction( (Missile missile, unit missileTarget) -> (begin
+                    caster.damageTarget(missileTarget, 20)
+                end))
+            debugPrint("stormbolt")
+        end))
+
+    

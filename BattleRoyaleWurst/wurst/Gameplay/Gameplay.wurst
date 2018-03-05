@@ -29,7 +29,7 @@ function saveMapState()
 
 //runs at the beginning of the map (0 seconds)
 function gameStarts()
-    print("gameplay.gameStarts")
+    //print("gameplay.gameStarts")
 
     saveMapState()
 
@@ -41,8 +41,8 @@ function gameStarts()
 //runs at the beginning of each round (5 seconds)
 function roundBegins()
     timerRoundStart.pause()
-    print("gameplay.gameRoundBegins")
-    print("Show ya Fkn SkillZZzz")
+    //print("gameplay.gameRoundBegins")
+    //print("Show ya Fkn SkillZZzz")
 
     TimerDialogDisplay(windowRoundStart, false)
     TimerDialogDisplay(windowCircleMessage, true)
@@ -61,7 +61,7 @@ function roundStarts()
     else
         time = 5 //can be increased, if loading takes too long
 
-    print("gameplay.roundStarts")
+    //print("gameplay.roundStarts")
 
     initCircle()
     createHeroes()
@@ -78,7 +78,7 @@ function roundStarts()
 
 //runs at the beginning of each round (instant)
 function roundInit()
-    print("Gameplay.roundInit")
+    //print("Gameplay.roundInit")
     CinematicFadeBJ( bj_CINEFADETYPE_FADEOUT, 0.00, "ReplaceableTextures\\CameraMasks\\White_mask.blp", 0, 0, 0, 0 )
     EnableUserControl(false)
     FogMaskEnable(false)
@@ -94,7 +94,7 @@ function roundInit()
     doAfter(time, () -> roundStarts())
 
 public function roundEnds()
-    print("Gameplay.roundEnds")
+    //print("Gameplay.roundEnds")
 
     for i = 0 to bj_MAX_PLAYERS-1
         FogModifierStop(mapVision[i])

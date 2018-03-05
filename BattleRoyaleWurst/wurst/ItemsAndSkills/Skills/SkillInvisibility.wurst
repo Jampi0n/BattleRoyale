@@ -2,8 +2,6 @@ package SkillInvisibility
 
 import SkillGeneration
 import initlater RuntimeInitialize
-import InstantDummyCaster
-import General
 
 public constant SKILL_INVISIBILITY = compiletime(newSkill("Invisibility", 8, true))
 
@@ -27,7 +25,7 @@ public function setupIvisibility()
             ..setDummySkill()
     else
         SKILL_INVISIBILITY.attachCode( (unit caster, unit _target, vec2 _pos) -> (begin
-            InstantDummyCaster.castTarget(caster.getOwner(), dummySpellId, 1, "invisibility", caster)
+            new Buff(caster, caster, dur, INVIS, 1)
             debugPrint("invis")
         end))
 

@@ -4,6 +4,8 @@ import TimerUtils
 import MapBounds
 import ClosureTimers
 import Execute
+import PlayerControl
+import General
 
 public constant ROUND_MESSAGE_DELAY = 10.
 
@@ -310,8 +312,26 @@ public function initCircle()
     for i = 0 to 20
         circleRoundDuration[i] = 500 / (i+2.).pow(1.5)
 
+function damageHeroes()
+    ForGroup(playerHeroes, () -> (begin
+        let u = GetEnumUnit()
+        let x = u.getX()/128
+        let y = u.getY()/128
+        let distance = SquareRoot((x-circleCurrentX).squared() + (y-circleCurrentY).squared())
+        if distance > circleCurrentRadius - 1 and IsPointBlighted(x*128, y*128) and u.isTargetable(Player(PLAYER_NEUTRAL_AGGRESSIVE), false, true)
+            u.addEffect("Abilities\\Spells\\Undead\\DeathandDecay\\DeathandDecayTarget.mdl", "head").destr()
+            if u.getHP() > 1.42
+                u.setHP(u.getHP()*0.995 - 1)
+            else
+                blightDummy.damageTarget(u, 1000)
+    end))
+
 init
     unitsOnMap = CreateGroup()
     CreateTrigger()
         ..addAction(function moveCircle)
         ..registerTimerEvent(1, true)
+
+    CreateTrigger()
+        ..addAction(function damageHeroes)
+        ..registerTimerEvent(0.25, true)

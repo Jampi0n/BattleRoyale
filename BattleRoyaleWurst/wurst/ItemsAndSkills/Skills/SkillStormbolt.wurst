@@ -2,43 +2,35 @@ package SkillStormbolt
 
 import SkillGeneration
 import initlater RuntimeInitialize
-import InstantDummyCaster
-import Missile
-import General
 
-public constant SKILL_STORMBOLT = compiletime(newSkill("Stormbolt", 0, false))
+public constant SKILL_STORMBOLT = compiletime(newSkill("Stormbolt", 6, false))
 
 
 
 @compiletime
 public function setupStormBolt()
     real dur = 2
-    int dummySpellId = compiletime(ABIL_ID_GEN.next())
 
     if compiletime
         SKILL_STORMBOLT.getSkillObject()
-            ..setDescription("Throws a hammer at the target direction, damagin and stunning the first target it hits")
+            ..setDescription("Throws a hammer at the target direction, damaging and stunning the first target it hits.")
             ..setIcon(Icons.bTNStormBolt)
             ..setManaCost(0)
             ..setRange(800)
             ..setTargetType(CHANNEL_POINT_TARGET)
 
-        new AbilityDefinitionThunderBoltCreep(dummySpellId)
-            ..setDurationHero(1, dur)
-            ..setDamage(1, 0)
-            ..setDummySkill()
     else
         SKILL_STORMBOLT.attachCode( (unit caster, unit _target, vec2 pos) -> (begin
             new Missile(caster, caster.getPos3with(80), 1000, caster.getPos().angleTo(pos), Abilities.stormBoltMissile)
+                ..setReflectFunction( defaultReflect )
                 ..hitOnce()
                 ..setMaxRange(900)
                 ..setHitCondition((Missile missile, unit missileTarget) -> (begin
                     return missileTarget.isTargetable(missile.getOwner().getOwner(), false, true)
                 end) )
                 ..setHitFunction( (Missile missile, unit missileTarget) -> (begin
-                    print(missileTarget.getName())
-                    InstantDummyCaster.castTarget(missile.getOwner().getOwner(), dummySpellId, 1, "creepthunderbolt", missileTarget)
-                    missile.getOwner().damageTarget(missileTarget, 25)
+                    caster.damageTarget(missileTarget, 15)
+                    new Buff(missileTarget, caster, dur, STUNNED, 1)
                     missile.destr()
                 end))
             debugPrint("stormbolt")
