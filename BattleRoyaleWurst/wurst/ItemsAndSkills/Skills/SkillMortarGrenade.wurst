@@ -4,10 +4,10 @@ import SkillGeneration
 import initlater RuntimeInitialize
 import initlater PlayerControl
 
-public constant SKILL_MORTAR_GRENADE = compiletime(newSkill("Mortar Grenade", 0, false))
+public constant SKILL_MORTAR_GRENADE = compiletime(newSkill("Mortar Grenade", 7, false))
 
 constant DETECTION_DUMMY = compiletime(ArtilleryDetection.createDetectionDummy())
-constant ARTILLERY_DUMMY = compiletime(ArtilleryDetection.createArtilleryDummy(80, Abilities.mortarMissile, 1200, 0.3, DETECTION_DUMMY))
+constant ARTILLERY_DUMMY = compiletime(ArtilleryDetection.createArtilleryDummy(0,0,80, 1, Abilities.mortarMissile, 1200, 0.3, DETECTION_DUMMY))
 
 @compiletime
 public function setupMortarGrenade()

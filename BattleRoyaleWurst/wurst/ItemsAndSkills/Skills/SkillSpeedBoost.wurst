@@ -20,6 +20,7 @@ public function setupSpeedBoost()
             ..setManaCost(0)
 
         new AbilityDefinitionUnholyAuracreep(ABILITY_ID_SPEED_BOOST)
+            ..hideIcon()
             ..setArtTarget(Abilities.speedTarget)
             ..setTargetsAllowed(1, "invulnerable,self,vulnerable")
             ..setAreaofEffect(1, 1)

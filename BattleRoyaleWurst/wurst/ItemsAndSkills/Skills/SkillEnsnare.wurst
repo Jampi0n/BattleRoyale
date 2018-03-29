@@ -4,7 +4,10 @@ import SkillGeneration
 import initlater RuntimeInitialize
 
 public constant SKILL_ENSNARE = compiletime(newSkill("Ensnare", 7, false))
+constant buffEnsnared = new BuffType(false, false)
 
+constant ENSNARE_BUFF_ID = compiletime( createAuraBuff("Ensnared", "This unit is ensnared; it cannot move.", Icons.bTNEnsnare))
+constant ENSNARED_ABILITY_ID = compiletime( createNegativeBuffAbility(1, ENSNARE_BUFF_ID, Abilities.ensnareTarget, "origin"))
 
 
 @compiletime
@@ -31,8 +34,12 @@ public function setupEnsnare()
                 end) )
                 ..setHitFunction( (Missile missile, unit missileTarget) -> (begin
                     new Buff(missileTarget, caster, dur, ENSNARED, 1)
+                    new Buff(missileTarget, caster, dur, buffEnsnared, 1)
                     missile.destr()
                 end))
         end))
 
-    
+init
+    var abilityList = new LinkedList<int>
+    ..add(ENSNARED_ABILITY_ID)
+    buffEnsnared.setup(abilityList, ENSNARE_BUFF_ID)

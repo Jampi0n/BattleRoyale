@@ -214,7 +214,7 @@ public class Inventory
 
     function removeSlotAll(int slot) returns int
         debugPrint("remove slot all")
-        let itm = this.assocUnit.itemInSlot(slot)
+        let itm = this.items[slot]
         if itm == null
             return -2
 

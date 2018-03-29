@@ -7,7 +7,7 @@ public constant SKILL_REFLECTOR = compiletime(newSkill("Reflector", 3, true))
 
 public constant BUFF_SKILL_REFLECTOR = new BuffType(true, true)
 constant BUFF_ID_SKILL_REFLECTOR = compiletime(createAuraBuff("Reflector", "Reflects incoming missiles.", Icons.bTNAnimalWarTraining))
-constant ABILITY_ID_SKILL_REFLECTOR = compiletime(createPositiveBuffAbility(1, BUFF_ID_SKILL_REFLECTOR, Abilities.manaShieldCaster))
+constant ABILITY_ID_SKILL_REFLECTOR = compiletime(createPositiveBuffAbility(1, BUFF_ID_SKILL_REFLECTOR, Abilities.manaShieldCaster, ""))
 
 @compiletime
 public function setupReflector()

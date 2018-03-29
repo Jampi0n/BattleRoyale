@@ -3,6 +3,12 @@ package PlayerControl
 import initlater Gameplay
 import Inventory
 import ClosureTimers
+import Barrel
+
+constant HERO_MK = 'H002'
+constant HERO_TC = 'H018'
+constant HERO_CL = 'H019'
+constant HERO_WD = 'H01A'
 
 public unit array playerHero
 public unit array hotkeyHero1
@@ -78,7 +84,15 @@ public function createHeroes()
             if GetLocalPlayer() == indexPlayer
                 PanCameraToTimed(startX[locI], startY[locI], 0)
             
-            playerHero[i] = CreateUnit(indexPlayer, 'H002', startX[locI], startY[locI], GetRandomReal(0,360))
+            int heroId = HERO_MK
+            if GetPlayerRace(indexPlayer) == RACE_ORC
+                heroId = HERO_TC
+            else if GetPlayerRace(indexPlayer) == RACE_UNDEAD
+                heroId = HERO_CL
+            else if GetPlayerRace(indexPlayer) == RACE_NIGHTELF
+                heroId = HERO_WD
+
+            playerHero[i] = CreateUnit(indexPlayer, heroId, startX[locI], startY[locI], GetRandomReal(0,360))
             hotkeyHero1[i] = CreateUnit(indexPlayer, 'H00N', startX[locI], startY[locI], 0)
                 ..pause()
             hotkeyHero2[i] = CreateUnit(indexPlayer, 'H00P', startX[locI], startY[locI], 0)
@@ -212,6 +226,17 @@ function onDeath()
                 return
             if GetUnitLevel(u) == 10
                 scoreBossKill(killer)
+
+                if mapLoading
+                    return
+            
+                for i = 0 to 10
+                    let drop = BARREL_DROPS.getRandom()
+                
+                    if drop == null
+                        return
+                
+                    drop.getItem().createWorldItem(u.getPos(), GetRandomInt(drop.getMinCount(), drop.getMaxCount()))
             else
                 scoreUnitKill(killer)
         
