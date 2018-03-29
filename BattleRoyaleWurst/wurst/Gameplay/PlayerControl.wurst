@@ -331,18 +331,17 @@ function updateBoard()
 function updateScore(int pId, boolean increase)
     int row = playerToRow[pId]
     int nextRow
-    int tmp
     if increase
         while true
             nextRow = row - 1
-            if nextRow < 1 or scoreScore[rowToPlayer[nextRow]] >= scoreScore[rowToPlayer[row]]
+            if nextRow < 1 or scoreScore[rowToPlayer[nextRow]] >= scoreScore[pId]
                 break
-            tmp = rowToPlayer[row]
+
             rowToPlayer[row] = rowToPlayer[nextRow]
-            rowToPlayer[nextRow] = tmp
+            rowToPlayer[nextRow] = pId
 
             playerToRow[rowToPlayer[row]] = row
-            playerToRow[rowToPlayer[nextRow]] = row
+            playerToRow[pId] = nextRow
 
             row = nextRow
     else
@@ -350,12 +349,12 @@ function updateScore(int pId, boolean increase)
             nextRow = row + 1
             if nextRow > playerCount or scoreScore[rowToPlayer[nextRow]] <= scoreScore[rowToPlayer[row]]
                 break
-            tmp = rowToPlayer[row]
+
             rowToPlayer[row] = rowToPlayer[nextRow]
-            rowToPlayer[nextRow] = tmp
+            rowToPlayer[nextRow] = pId
 
             playerToRow[rowToPlayer[row]] = row
-            playerToRow[rowToPlayer[nextRow]] = row
+            playerToRow[pId] = nextRow
 
             row = nextRow
 
