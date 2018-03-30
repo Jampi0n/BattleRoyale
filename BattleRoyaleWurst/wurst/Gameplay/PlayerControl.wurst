@@ -530,7 +530,25 @@ function setupPlayers()
         ..addAction(function onDeath)
         ..registerAnyUnitEvent(EVENT_PLAYER_UNIT_DEATH)
 
+function setupTeams()
+    for i = 0 to bj_MAX_PLAYERS-1
+        let sourcePlayer = Player(i)
+        SetPlayerHandicap(sourcePlayer, 1)
+        for j = 0 to bj_MAX_PLAYERS-1
+            if i != j
+                //ffa, everone us enemy to everyone
+                let otherPlayer = Player(j)
+                SetPlayerAlliance(sourcePlayer, otherPlayer, ALLIANCE_PASSIVE,       false)
+                SetPlayerAlliance(sourcePlayer, otherPlayer, ALLIANCE_HELP_REQUEST,  false)
+                SetPlayerAlliance(sourcePlayer, otherPlayer, ALLIANCE_HELP_RESPONSE, false)
+                SetPlayerAlliance(sourcePlayer, otherPlayer, ALLIANCE_SHARED_XP,     false)
+                SetPlayerAlliance(sourcePlayer, otherPlayer, ALLIANCE_SHARED_SPELLS, false)
+                SetPlayerAlliance(sourcePlayer, otherPlayer, ALLIANCE_SHARED_VISION, false)
+                SetPlayerAlliance(sourcePlayer, otherPlayer, ALLIANCE_SHARED_CONTROL, false)
+                SetPlayerAlliance(sourcePlayer, otherPlayer, ALLIANCE_SHARED_ADVANCED_CONTROL, false)
+
 init
+    setupTeams()
     setupPlayers()
     setupHeroes()
     CreateTrigger()
