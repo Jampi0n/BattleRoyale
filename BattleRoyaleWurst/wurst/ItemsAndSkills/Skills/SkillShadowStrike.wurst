@@ -42,8 +42,9 @@ public function setupShadowStrike()
                     doPeriodically(1.5, (CallbackPeriodic cb) -> (begin
                         if not BuffList.hasBuffType(missileTarget, BUFF_SHADOW_STRIKE)
                             destroy cb
-                        caster.damageTarget(missileTarget, 10)
-                        createShadowStrikeTextTag(missileTarget, 10, false)
+                        else
+                            caster.damageTarget(missileTarget, 10)
+                            createShadowStrikeTextTag(missileTarget, 10, false)
                     end) )
                     missile.destr()
                 end))

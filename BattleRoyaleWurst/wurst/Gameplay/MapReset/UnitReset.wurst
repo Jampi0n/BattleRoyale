@@ -38,7 +38,8 @@ function loadSingle()
 
     u.remove()
     u = createUnit(Player(playerId), unitTypeId, vec2(x, y), facing.fromDeg())
-    SetUnitAcquireRange(u, 200)
+    if unitTypeId != 'n015'
+        SetUnitAcquireRange(u, 200)
     saveList.saveUnitHandle(currentCount, 0, u)
 
     currentCount++

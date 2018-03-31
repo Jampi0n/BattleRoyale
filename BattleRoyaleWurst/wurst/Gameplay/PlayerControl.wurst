@@ -4,6 +4,7 @@ import initlater Gameplay
 import Inventory
 import ClosureTimers
 import Barrel
+import LinkedList
 
 constant HERO_MK = 'H002'
 constant HERO_TC = 'H018'
@@ -477,14 +478,20 @@ function periodicScoreUpdate()
     updateBoard()*/
 
     //update the multiboard from top to bottom
-    for j = 1 to bj_MAX_PLAYERS
-        let i = rowToPlayer[j]
-        if playerState[i] == PlayerState.ALIVE
-            if playerHero[i]!= null
-                if not playerHero[i].isPaused()
-                    scoreSurvivedTime[i]++
-                    scoreScore[i]++
-                    updateScore(i, true, false)
+    let list = new LinkedList<int>
+    for i = 1 to playerCount
+        let pId = rowToPlayer[i]
+        if playerState[pId] == PlayerState.ALIVE
+            if playerHero[pId]!= null
+                if not playerHero[pId].isPaused()
+                    list.add(pId)
+
+    for int i in list        
+        scoreSurvivedTime[i]++
+        scoreScore[i]++
+        updateScore(i, true, false)
+
+    destroy list
     updateBoard()
 
 
