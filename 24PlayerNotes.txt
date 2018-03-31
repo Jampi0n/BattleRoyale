@@ -1,0 +1,17 @@
+PTR test:
+
+
+multiboard:
+multiboard only showed up after the first round. This might suggest, that when the multiboard was created, the thread crashed, before
+the multiboard was shown. Seems unlikely though, because op-limit was increased. Multiboard is way to big though.
+
+blight
+blight + trees
+These issues should not be 24 player related. If they are in the 12 player version, fix them. If not wait if they persist once the patch is there.
+
+-> found a way to reveal blight to players through fog -> no fog modifiers required
+
+
+fps: every seconds (score update multiboard) frame drop
+idea: change update order: start with player with highest score, so positions are not swapped often
+idea: don't update the board for every player iteration; only update variables and then after all players are done, update the board

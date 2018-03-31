@@ -46,6 +46,7 @@ fogmodifier array arrayVM1
 fogmodifier array arrayVM2
 fogmodifier array arrayVM3
 fogmodifier array arrayVM4
+fogmodifier array vm
 integer currentPlayer
 real currentX
 real currentY
@@ -168,8 +169,8 @@ function removeFogModifier()
 
 
 function revealNextCircle()
-    addFogModifier()
-    doAfter(1, () -> removeFogModifier())
+    //addFogModifier()
+    //doAfter(1, () -> removeFogModifier())
     timerCircleMove.start(circleRoundDuration[circleRound], function onTimerCircleMove)
     TimerDialogDisplay(windowCircleMove, true)
 
@@ -180,39 +181,85 @@ function drawPoint(int x, int y)
 
     if playableMapRect.contains( vec2(realX, realY))
         SetBlight(Player(PLAYER_NEUTRAL_AGGRESSIVE), realX, realY, 256, true)
+        SetBlight(Player(PLAYER_NEUTRAL_PASSIVE), realX, realY, 256, true)
+
+
+        /*for i = 0 to (bj_MAX_PLAYERS/4).toInt()-1
+            countVM++
+            arrayVM1[countVM] = CreateFogModifierRadius(Player(i*4), FOG_OF_WAR_VISIBLE, realX, realY, 512, true, false)
+                ..start()
+            arrayVM2[countVM] = CreateFogModifierRadius(Player(i*4 + 1), FOG_OF_WAR_VISIBLE, realX, realY, 512, true, false)
+                ..start()
+            arrayVM3[countVM] = CreateFogModifierRadius(Player(i*4 + 2), FOG_OF_WAR_VISIBLE, realX, realY, 512, true, false)
+                ..start()
+            arrayVM4[countVM] = CreateFogModifierRadius(Player(i*4 + 3), FOG_OF_WAR_VISIBLE, realX, realY, 512, true, false)
+                ..start()*/
+
+        /*for i = 0 to bj_MAX_PLAYERS-1
+            vm[i] = CreateFogModifierRadius(Player(i), FOG_OF_WAR_VISIBLE, realX, realY, 512, true, false)
+            vm[i].start()
+    doAfter(1, () -> (begin
+        for i = 0 to bj_MAX_PLAYERS-1
+            vm[i].destr()
+            vm[i] = null
+    end))*/
+
+int drawCircle_R
+int drawCircle_y
+int drawCircle_x
+int drawCircle_F
+int drawCircle_dE
+int drawCircle_dSE
+int drawCircle_loop
+
+function drawCircleLoop()
+    drawCircle_loop++
+
+    if drawCircle_x<drawCircle_y 
+        if drawCircle_F < 0
+            drawCircle_F += drawCircle_dE
+            drawCircle_dSE += 2
+        else
+            drawCircle_F += drawCircle_dSE
+            drawCircle_y--
+            drawCircle_dSE += 4
+
+        drawCircle_x++
+        drawCircle_dE += 2
+        drawPoint(drawCircle_x, drawCircle_y)
+        drawPoint(drawCircle_x, -drawCircle_y)
+        drawPoint(-drawCircle_x, drawCircle_y)
+        drawPoint(-drawCircle_x, -drawCircle_y)
+
+        drawPoint(drawCircle_y, drawCircle_x)
+        drawPoint(drawCircle_y, -drawCircle_x)
+        drawPoint(-drawCircle_y, drawCircle_x)
+        drawPoint(-drawCircle_y, -drawCircle_x)
+
+        if drawCircle_loop < 16
+            drawCircleLoop()
+        else
+            drawCircle_loop = 0
+            execute(() -> drawCircleLoop())
 
 function drawCircle()
-    int R = circleDrawRadius
-    int y = R
-    int x = 0
-    int F = 1-R
-    int dE = 1
-    int dSE = 2 - R - R
-    drawPoint(0, R)
-    drawPoint(R, 0)
-    drawPoint(0, -R)
-    drawPoint(-R, 0)
+    drawCircle_R = circleDrawRadius
+    drawCircle_y = drawCircle_R
+    drawCircle_x = 0
+    drawCircle_F = 1-drawCircle_R
+    drawCircle_dE = 1
+    drawCircle_dSE = 2 - drawCircle_R - drawCircle_R
+    drawCircle_loop = 0
 
-    while x<y
-        if F < 0
-            F += dE
-            dSE += 2
-        else
-            F += dSE
-            y--
-            dSE += 4
 
-        x++
-        dE += 2
-        drawPoint(x, y)
-        drawPoint(x, -y)
-        drawPoint(-x, y)
-        drawPoint(-x, -y)
+    drawPoint(0, drawCircle_R)
+    drawPoint(drawCircle_R, 0)
+    drawPoint(0, -drawCircle_R)
+    drawPoint(-drawCircle_R, 0)
 
-        drawPoint(y, x)
-        drawPoint(y, -x)
-        drawPoint(-y, x)
-        drawPoint(-y, -x)
+    drawCircleLoop()
+    doAfter(0.9, () -> removeFogModifier())
+
 
 
 function initCircleNext()

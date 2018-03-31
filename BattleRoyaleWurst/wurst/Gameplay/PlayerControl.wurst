@@ -53,8 +53,8 @@ int totalLocations = 0
 boolean disableSelectionDetection = false
 
 //multiboard
-int array rowToPlayer
-int array playerToRow
+int array rowToPlayer // 1 ... playerCount
+int array playerToRow // 0 ... (playerCount - 1)
 
 multiboard scoreBoardBig
 multiboard scoreBoardSmall
@@ -328,7 +328,7 @@ function updateBoard()
         MultiboardReleaseItem(mbitem)
         
 
-function updateScore(int pId, boolean increase)
+function updateScore(int pId, boolean increase, boolean update)
     int row = playerToRow[pId]
     int nextRow
     if increase
@@ -358,7 +358,8 @@ function updateScore(int pId, boolean increase)
 
             row = nextRow
 
-    updateBoard()
+    if update
+        updateBoard()
 
 function scoreHeroKill(int killer, int victim)
     scoreDeaths[victim]++
@@ -367,17 +368,17 @@ function scoreHeroKill(int killer, int victim)
 
     scoreHeroKills[killer]++
     scoreScore[killer] += 100
-    updateScore(killer, true)
+    updateScore(killer, true, true)
 
 function scoreBossKill(int killer)
     scoreBossKills[killer]++
     scoreScore[killer] += 50
-    updateScore(killer, true)
+    updateScore(killer, true, true)
 
 function scoreUnitKill(int killer)
     scoreUnitKills[killer]++
     scoreScore[killer] += 5
-    updateScore(killer, true)
+    updateScore(killer, true, true)
 
 function initMultiboard()
     multiboarditem mbitem
@@ -458,18 +459,33 @@ function initMultiboard()
     MultiboardDisplay(scoreBoardBig, true)
     
     MultiboardMinimize(scoreBoardBig, true)
-    MultiboardMinimize(scoreBoardBig, false)
-
     updateBoard()
+    doAfter(0, () -> MultiboardMinimize(scoreBoardBig, false))
+    
+
+    
 
 function periodicScoreUpdate()
+    /*
     for i = 0 to bj_MAX_PLAYERS-1
         if playerState[i] == PlayerState.ALIVE
             if playerHero[i]!= null
                 if not playerHero[i].isPaused()
                     scoreSurvivedTime[i]++
                     scoreScore[i]++
-                    updateScore(i, true)
+                    updateScore(i, true, false)
+    updateBoard()*/
+
+    //update the multiboard from top to bottom
+    for j = 1 to bj_MAX_PLAYERS
+        let i = rowToPlayer[j]
+        if playerState[i] == PlayerState.ALIVE
+            if playerHero[i]!= null
+                if not playerHero[i].isPaused()
+                    scoreSurvivedTime[i]++
+                    scoreScore[i]++
+                    updateScore(i, true, false)
+    updateBoard()
 
 
 function moveHotkeyHeroes()
