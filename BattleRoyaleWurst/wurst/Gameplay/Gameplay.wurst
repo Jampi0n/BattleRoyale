@@ -42,7 +42,7 @@ function gameStarts()
 function roundBegins()
     timerRoundStart.pause()
     //print("gameplay.gameRoundBegins")
-    //print("Show ya Fkn SkillZZzz")
+    print("|cffffcc00Let the Battle begin!|r")
 
     TimerDialogDisplay(windowRoundStart, false)
     TimerDialogDisplay(windowCircleMessage, true)
@@ -95,6 +95,8 @@ function roundInit()
 
 public function roundEnds()
     //print("Gameplay.roundEnds")
+
+    ClearTextMessages()
 
     for i = 0 to bj_MAX_PLAYERS-1
         FogModifierStop(mapVision[i])

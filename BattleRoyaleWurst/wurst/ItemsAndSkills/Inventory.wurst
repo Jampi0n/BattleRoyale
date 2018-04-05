@@ -10,6 +10,9 @@ import HashMap
 import BonusMod
 import ObjectIds
 import ErrorHandling
+import SoundUtils
+
+constant SOUND_ERROR = new SoundDefinition(Sounds.error, false, false)
 
 boolean loading = false
 boolean noDrop = false
@@ -435,7 +438,9 @@ public class Inventory
                     this.learnSkillFromItem(i)
                     debugPrint("Learn Please!")
                 else
-                    printTimedToPlayer("You cannot learn items in this slot!", 5, this.assocUnit.getOwner())
+                    printTimedToPlayer("|cffffcc00You cannot learn skills from an item in this slot!|r", 5, this.assocUnit.getOwner())
+                    SOUND_ERROR.play()
+
 
 
     function changePage(int newPage)

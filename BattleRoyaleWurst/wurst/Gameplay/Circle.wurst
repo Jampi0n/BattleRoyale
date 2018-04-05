@@ -6,8 +6,12 @@ import ClosureTimers
 import Execute
 import PlayerControl
 import General
+import SoundUtils
+import Assets
 
 public constant ROUND_MESSAGE_DELAY = 10.
+
+constant SOUND_WARNING = new SoundDefinition(Sounds.warning, false, false)
 
 public timer timerCircleMove = getTimer()
 public timerdialog windowCircleMove = CreateTimerDialog(timerCircleMove)
@@ -68,6 +72,8 @@ integer c_count
 
 function onTimerCircleMove()
     TimerDialogDisplay(windowCircleMove, false)
+    print("|cffffcc00Warning! The circle is moving.|r")
+    SOUND_WARNING.play()
     moving = true
 
 function circleVisionPoint(int x, int y)
@@ -312,7 +318,7 @@ public function onTimerMessage()
     if circleCurrentRadius < 5
         return
     
-    print("The circle shrinks in "+circleRoundDuration[circleRound].toInt().toString()+" seconds." )
+    print("|cffffcc00The circle shrinks in "+circleRoundDuration[circleRound].toInt().toString()+" seconds.|r" )
 
     if circleRound != 1
         initCircleNext()
@@ -341,7 +347,7 @@ function moveCircle()
         moving = false
         timerCircleMessage.start(ROUND_MESSAGE_DELAY, function onTimerMessage)
         TimerDialogDisplay(windowCircleMessage, true)
-        print("The circle was shrunk. Round "+circleRound.toString()+" stats.")
+        print("|cffffcc00The circle was shrunk. Round "+circleRound.toString()+" stats.|r")
 
 public function circleStopMoving()
     moving = false

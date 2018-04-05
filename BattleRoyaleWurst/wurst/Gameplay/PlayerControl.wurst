@@ -185,16 +185,16 @@ function onDeath()
 
         if killer == PLAYER_NEUTRAL_AGGRESSIVE
             if GetUnitLevel(k) == 10
-                printTimed(p.getName()+" was killed by "+k.getName(), 5)
+                printTimed( p.getNameColored()+" was killed by "+k.getName(), 5)
             else
-                printTimed(p.getName()+" was killed by a "+k.getName(), 5)
+                printTimed(p.getNameColored()+" was killed by a "+k.getName(), 5)
         else if killer >= 0 and killer < PLAYER_NEUTRAL_AGGRESSIVE
-            printTimed(p.getName()+" was killed by "+Player(killer).getName(), 5)
+            printTimed(p.getName()+" was killed by "+Player(killer).getNameColored(), 5)
         else
             if k == blightDummy
-                printTimed(p.getName()+" was killed by Blight.", 5)
+                printTimed(p.getNameColored()+" was killed by Blight.", 5)
             else
-                printTimed(p.getName()+" has died.", 5)
+                printTimed(p.getNameColored()+" has died.", 5)
 
         if killer >= PLAYER_NEUTRAL_AGGRESSIVE
             killer = -1
