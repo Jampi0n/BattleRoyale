@@ -380,7 +380,7 @@ public function initCircle()
     circleRound = 1
 
     for i = 0 to 20
-        circleRoundDuration[i] = 5//500 / (i+2.).pow(1.5)
+        circleRoundDuration[i] = 500 / (i+2.).pow(1.5)
 
 function damageHeroes()
     ForGroup(playerHeroes, () -> (begin
