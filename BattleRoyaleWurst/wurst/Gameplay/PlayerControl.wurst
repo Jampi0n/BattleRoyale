@@ -554,9 +554,10 @@ function setupPlayers()
         ..registerAnyUnitEvent(EVENT_PLAYER_UNIT_DEATH)
 
 function setupTeams()
-    for i = 0 to bj_MAX_PLAYERS-1
+    for i = 0 to bj_MAX_PLAYERS-2
         let sourcePlayer = Player(i)
         SetPlayerHandicap(sourcePlayer, 1)
+        SetPlayerAlliance(players[23], sourcePlayer, ALLIANCE_SHARED_VISION, true)
         for j = 0 to bj_MAX_PLAYERS-1
             if i != j
                 //ffa, everone us enemy to everyone

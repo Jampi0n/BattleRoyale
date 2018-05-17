@@ -116,8 +116,7 @@ public function roundEnds()
     timerRoundStart.pause()
 
     circleStopMoving()
-
-    SetBlightRect( Player(PLAYER_NEUTRAL_AGGRESSIVE), GetWorldBounds(), false )
+    circleClear()
 
     doAfter(0, () -> roundInit() )
 
