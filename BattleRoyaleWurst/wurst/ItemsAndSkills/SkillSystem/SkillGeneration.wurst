@@ -68,7 +68,7 @@ public class SkillObject
 
         this.itemObject = newItem(ItemType.Skill).getItemObject()
 
-        compAbilityTypeIds += int2fourchar(compSkillId*4 + OBJECT_ID_ABILITY_OFFSET).substring(1)
+        compAbilityTypeIds += (compSkillId*4 + OBJECT_ID_ABILITY_OFFSET).toRawCode().substring(1)
         compAbilityItemIds += this.itemObject.getId().toString()+"|"
         compAbilityCooldowns += cooldown.toString()+"|"
         compAbilityInstant += instant?"1":"0"
@@ -78,21 +78,21 @@ public class SkillObject
                 ..setBufferManaRequired(1, 0)
                 ..setDamageperInterval(1, 0)
                 ..setManaDrainedperSecond(1, 0)
-                ..setBuffs(1, int2fourchar(BUFF_INSTANT_Q))
+                ..setBuffs(1, BUFF_INSTANT_Q.toRawCode())
                 ..setupAbilityForSkill("Q")
                 ..setCooldown(1, cooldown)
     
             skillW = new AbilityDefinitionSeaWitchManaShield(compSkillId*4+OBJECT_ID_ABILITY_OFFSET+1)
                 ..setDamageAbsorbed(1, 0)
                 ..setManaperHitPoint(1, 0)
-                ..setBuffs(1, int2fourchar(BUFF_INSTANT_W))
+                ..setBuffs(1, BUFF_INSTANT_W.toRawCode())
                 ..setupAbilityForSkill("W")
                 ..setCooldown(1, cooldown)
       
             skillE = new AbilityDefinitionBeserk(compSkillId*4+OBJECT_ID_ABILITY_OFFSET+2)
                 ..setAttackSpeedIncrease(1, 0)
                 ..setDamageTakenIncrease(1, 0)
-                ..setBuffs(1, int2fourchar(BUFF_INSTANT_E))
+                ..setBuffs(1, BUFF_INSTANT_E.toRawCode())
                 ..setupAbilityForSkill("E")
                 ..setCooldown(1, cooldown)
 
@@ -103,7 +103,7 @@ public class SkillObject
                 ..setMovementSpeedIncrease(1, 0)
                 ..setTransitionTime(1, -1)
                 ..setEffectSound("")
-                ..setBuffs(1, int2fourchar(BUFF_INSTANT_R))
+                ..setBuffs(1, BUFF_INSTANT_R.toRawCode())
                 ..setupAbilityForSkill("R")
                 ..setCooldown(1, cooldown)
     
@@ -119,7 +119,7 @@ public class SkillObject
                 ..setArtEffect("")
                 ..setArtTarget("")
                 ..setEffectSound("")
-                ..setBuffs(1, int2fourchar(BUFF_INSTANT_Q))
+                ..setBuffs(1, BUFF_INSTANT_Q.toRawCode())
                 ..setupAbilityForSkill("Q")
                 ..setCooldown(1, cooldown)
     
@@ -134,7 +134,7 @@ public class SkillObject
                 ..setArtEffect("")
                 ..setArtTarget("")
                 ..setEffectSound("")
-                ..setBuffs(1, int2fourchar(BUFF_INSTANT_W))
+                ..setBuffs(1, BUFF_INSTANT_W.toRawCode())
                 ..setupAbilityForSkill("W")
                 ..setCooldown(1, cooldown)
     
@@ -149,7 +149,7 @@ public class SkillObject
                 ..setArtEffect("")
                 ..setArtTarget("")
                 ..setEffectSound("")
-                ..setBuffs(1, int2fourchar(BUFF_INSTANT_E))
+                ..setBuffs(1, BUFF_INSTANT_E.toRawCode())
                 ..setupAbilityForSkill("E")
                 ..setCooldown(1, cooldown)
     
@@ -164,7 +164,7 @@ public class SkillObject
                 ..setArtEffect("")
                 ..setArtTarget("")
                 ..setEffectSound("")
-                ..setBuffs(1, int2fourchar(BUFF_INSTANT_R))
+                ..setBuffs(1, BUFF_INSTANT_R.toRawCode())
                 ..setupAbilityForSkill("R")
                 ..setCooldown(1, cooldown)
     
@@ -244,25 +244,25 @@ function AbilityDefinition.setupAbilityForSkill(string hotkey)
             ..presetButtonPosNormal(0, 2)
             ..presetButtonPosResearch(0, 2)
             ..presetButtonPosTurnOff(0, 2)
-            ..setRequirements(int2fourchar(COOLDOWN_Q))
+            ..setRequirements(COOLDOWN_Q.toRawCode())
     else if hotkey == "W"
         this
             ..presetButtonPosNormal(1, 2)
             ..presetButtonPosResearch(1, 2)
             ..presetButtonPosTurnOff(1, 2)
-            ..setRequirements(int2fourchar(COOLDOWN_W))
+            ..setRequirements(COOLDOWN_W.toRawCode())
     else if hotkey == "E"
         this
             ..presetButtonPosNormal(2, 2)
             ..presetButtonPosResearch(2, 2)
             ..presetButtonPosTurnOff(2, 2)
-            ..setRequirements(int2fourchar(COOLDOWN_E))
+            ..setRequirements(COOLDOWN_E.toRawCode())
     else if hotkey == "R"
         this
             ..presetButtonPosNormal(3, 2)
             ..presetButtonPosResearch(3, 2)
             ..presetButtonPosTurnOff(3, 2)
-            ..setRequirements(int2fourchar(COOLDOWN_R))
+            ..setRequirements(COOLDOWN_R.toRawCode())
 
 public function newSkill(string name, real cooldown, boolean instant) returns int
     compSkillId++

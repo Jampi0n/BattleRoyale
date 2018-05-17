@@ -242,7 +242,7 @@ function onDeath()
                 scoreUnitKill(killer)
         
 function getPlayerIdColorString(int pId) returns string
-    return fromPlayer(Player(pId)).toColorString()
+    return Player(pId).getColor().toColor().toColorString()
 
 function seconds2Time(int time) returns string
     int remainingTime

@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "BattleRoyaleWurst"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"wurst.build": "yaml"
+		}
+	}
+}

@@ -196,7 +196,7 @@ public class Inventory
 
             if this.slotEmpty[this.currentPage*6+i] or itm == null
                 //to place items at the correct slot
-                this.assocUnit.addItem('phlt')
+                this.assocUnit.addItemById('phlt')
                 debugPrint("add phlt in "+i.toString())
             else
                 debugPrint("item in slot "+i.toString())
@@ -405,7 +405,7 @@ public class Inventory
 
         abilityTypeId =  newSkill.getTypeId()+slot
 
-        debugPrint("learn ability "+int2fourchar(abilityTypeId))
+        debugPrint("learn ability "+abilityTypeId.toRawCode())
 
         this.removeDummySkillFromSlot(slot)
         this.assocUnit.addAbility(abilityTypeId)
@@ -557,13 +557,13 @@ public class Inventory
     private function addDummyItemToSlot(int slot)
         debugPrint("Adding Dummy Item to slot "+slot.toString())
         if(slot==0)
-            this.assocUnit.addItem(DUMMY_ITEM_Q)
+            this.assocUnit.addItemById(DUMMY_ITEM_Q)
         else if(slot==1)
-            this.assocUnit.addItem(DUMMY_ITEM_W)
+            this.assocUnit.addItemById(DUMMY_ITEM_W)
         else if(slot==2)
-            this.assocUnit.addItem(DUMMY_ITEM_E)
+            this.assocUnit.addItemById(DUMMY_ITEM_E)
         else if(slot==3)
-            this.assocUnit.addItem(DUMMY_ITEM_R)
+            this.assocUnit.addItemById(DUMMY_ITEM_R)
         else
             debugPrint("InventorySystem.AddDummyItemToSlot: Cannot add dummy item to this slot!")
 
@@ -613,10 +613,10 @@ function unit.addDummyObjects()
     this.addAbility(DUMMY_SKILL_E)
     this.addAbility(DUMMY_SKILL_R)
 
-    this.addItem(DUMMY_ITEM_Q)
-    this.addItem(DUMMY_ITEM_W)
-    this.addItem(DUMMY_ITEM_E)
-    this.addItem(DUMMY_ITEM_R)
+    this.addItemById(DUMMY_ITEM_Q)
+    this.addItemById(DUMMY_ITEM_W)
+    this.addItemById(DUMMY_ITEM_E)
+    this.addItemById(DUMMY_ITEM_R)
 
 
 init

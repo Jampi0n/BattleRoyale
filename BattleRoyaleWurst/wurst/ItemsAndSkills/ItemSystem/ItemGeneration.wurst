@@ -36,7 +36,7 @@ public class ItemObject
         this.id = id
         idToItemObject.put(id, this)
 
-        compItemTypeIds += int2fourchar(compItemId*2 + OBJECT_ID_ITEM_OFFSET).substring(1)
+        compItemTypeIds += (compItemId*2 + OBJECT_ID_ITEM_OFFSET).toRawCode().substring(1)
         if itemType == ItemType.Skill
             compItemItemTypes += "0"
         else if itemType == ItemType.Usable
@@ -61,10 +61,10 @@ public class ItemObject
 
         if itemType == ItemType.Skill
             this.inventoryItem
-                ..setCooldownGroup(int2fourchar(LEARN_SKILL))
+                ..setCooldownGroup(LEARN_SKILL.toRawCode())
                 ..setClassification("Artifact")
                 ..setNumberofCharges(1000)
-                ..setAbilities(int2fourchar(LEARN_SKILL))
+                ..setAbilities(LEARN_SKILL.toRawCode())
                 ..setActivelyUsed(true)
             this.worldItem
                 ..setNumberofCharges(1000)
@@ -110,8 +110,8 @@ public class ItemObject
 
     function setAbility(int abil)
         this.inventoryItem
-            ..setAbilities(int2fourchar(abil))
-            ..setCooldownGroup(int2fourchar(abil))
+            ..setAbilities(abil.toRawCode())
+            ..setCooldownGroup(abil.toRawCode())
 
 
 public function newItem(ItemType itemType) returns int
