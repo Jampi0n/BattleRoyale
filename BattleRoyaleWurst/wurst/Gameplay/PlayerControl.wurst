@@ -185,16 +185,16 @@ function onDeath()
 
         if killer == PLAYER_NEUTRAL_AGGRESSIVE
             if GetUnitLevel(k) == 10
-                printTimed(p.getName()+" was killed by "+k.getName(), 5)
+                printTimed( p.getNameColored()+" was killed by "+k.getName(), 5)
             else
-                printTimed(p.getName()+" was killed by a "+k.getName(), 5)
+                printTimed(p.getNameColored()+" was killed by a "+k.getName(), 5)
         else if killer >= 0 and killer < PLAYER_NEUTRAL_AGGRESSIVE
-            printTimed(p.getName()+" was killed by "+Player(killer).getName(), 5)
+            printTimed(p.getName()+" was killed by "+Player(killer).getNameColored(), 5)
         else
             if k == blightDummy
-                printTimed(p.getName()+" was killed by Blight.", 5)
+                printTimed(p.getNameColored()+" was killed by Blight.", 5)
             else
-                printTimed(p.getName()+" has died.", 5)
+                printTimed(p.getNameColored()+" has died.", 5)
 
         if killer >= PLAYER_NEUTRAL_AGGRESSIVE
             killer = -1
@@ -242,7 +242,7 @@ function onDeath()
                 scoreUnitKill(killer)
         
 function getPlayerIdColorString(int pId) returns string
-    return fromPlayer(Player(pId)).toColorString()
+    return Player(pId).getColor().toColor().toColorString()
 
 function seconds2Time(int time) returns string
     int remainingTime
@@ -554,9 +554,10 @@ function setupPlayers()
         ..registerAnyUnitEvent(EVENT_PLAYER_UNIT_DEATH)
 
 function setupTeams()
-    for i = 0 to bj_MAX_PLAYERS-1
+    for i = 0 to bj_MAX_PLAYERS-2
         let sourcePlayer = Player(i)
         SetPlayerHandicap(sourcePlayer, 1)
+        SetPlayerAlliance(players[23], sourcePlayer, ALLIANCE_SHARED_VISION, true)
         for j = 0 to bj_MAX_PLAYERS-1
             if i != j
                 //ffa, everone us enemy to everyone

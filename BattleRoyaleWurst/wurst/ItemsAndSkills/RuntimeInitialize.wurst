@@ -236,7 +236,7 @@ init
     stringLength = stringArray.length()
     executeWhile(10, () -> (stringPos < stringLength) , () -> (begin
         string currentString = stringArray.substring(stringPos, stringPos+3)
-        itemTypeId[forCounter] = fourchar2int("I"+currentString)
+        itemTypeId[forCounter] = ("I"+currentString).fromRawCode()
 
         stringPos += 3
         forCounter++
@@ -262,7 +262,7 @@ init
     stringLength = stringArray.length()
     executeWhile(10, () -> (stringPos < stringLength) , () -> (begin
         string currentString = stringArray.substring(stringPos, stringPos+3)
-        skillAbilityTypeId[forCounter] = fourchar2int("A"+currentString)
+        skillAbilityTypeId[forCounter] = ("A"+currentString).fromRawCode()
 
         stringPos += 3
         forCounter++

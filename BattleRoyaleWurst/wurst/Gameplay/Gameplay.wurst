@@ -42,7 +42,7 @@ function gameStarts()
 function roundBegins()
     timerRoundStart.pause()
     //print("gameplay.gameRoundBegins")
-    //print("Show ya Fkn SkillZZzz")
+    print("|cffffcc00Let the Battle begin!|r")
 
     TimerDialogDisplay(windowRoundStart, false)
     TimerDialogDisplay(windowCircleMessage, true)
@@ -89,12 +89,14 @@ function roundInit()
         time = 2
         CinematicFadeBJ( bj_CINEFADETYPE_FADEOUT, time, "ReplaceableTextures\\CameraMasks\\White_mask.blp", 0, 0, 0, 0 )
     else
-        time = 0
+        time = 2
 
     doAfter(time, () -> roundStarts())
 
 public function roundEnds()
     //print("Gameplay.roundEnds")
+
+    ClearTextMessages()
 
     for i = 0 to bj_MAX_PLAYERS-1
         FogModifierStop(mapVision[i])
@@ -114,8 +116,7 @@ public function roundEnds()
     timerRoundStart.pause()
 
     circleStopMoving()
-
-    SetBlightRect( Player(PLAYER_NEUTRAL_AGGRESSIVE), GetWorldBounds(), false )
+    circleClear()
 
     doAfter(0, () -> roundInit() )
 

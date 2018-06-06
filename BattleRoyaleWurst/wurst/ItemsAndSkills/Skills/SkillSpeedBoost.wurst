@@ -26,7 +26,7 @@ public function setupSpeedBoost()
             ..setAreaofEffect(1, 1)
             ..setMovementSpeedIncrease(1, 10)
             ..setLifeRegenerationIncrease(1, 0)
-            ..setBuffs(1, int2fourchar(BUFF_ID_SPEED_BOOST))
+            ..setBuffs(1, BUFF_ID_SPEED_BOOST.toRawCode())
 
     else
         let abilityList = new LinkedList<int>

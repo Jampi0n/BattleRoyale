@@ -3,11 +3,15 @@ package Circle
 import TimerUtils
 import MapBounds
 import ClosureTimers
-import Execute
+//import Execute
 import PlayerControl
 import General
+import SoundUtils
+import Assets
 
 public constant ROUND_MESSAGE_DELAY = 10.
+
+constant SOUND_WARNING = new SoundDefinition(Sounds.warning, false, false)
 
 public timer timerCircleMove = getTimer()
 public timerdialog windowCircleMove = CreateTimerDialog(timerCircleMove)
@@ -38,7 +42,9 @@ public real array circleRoundDuration
 
 
 group unitsOnMap
-boolean moving = FALSE
+boolean stopBlight = false
+boolean moving = false
+boolean revealCircle = false
 
 integer countVM = 0
 integer currentVM = 0
@@ -68,8 +74,10 @@ integer c_count
 
 function onTimerCircleMove()
     TimerDialogDisplay(windowCircleMove, false)
+    print("|cffffcc00Warning! The circle is moving.|r")
+    SOUND_WARNING.play()
     moving = true
-
+/*
 function circleVisionPoint(int x, int y)
     let realX = (x + circleDrawX) * 128.
     let realY = (y + circleDrawY) * 128.
@@ -166,7 +174,7 @@ function removeFogModifier()
     //print("fogModifiers: "+countVM.toString())
     currentVM = 0
     removeCircleVision()
-
+*/
 
 function revealNextCircle()
     //addFogModifier()
@@ -183,6 +191,10 @@ function drawPoint(int x, int y)
         SetBlight(Player(PLAYER_NEUTRAL_AGGRESSIVE), realX, realY, 256, true)
         SetBlight(Player(PLAYER_NEUTRAL_PASSIVE), realX, realY, 256, true)
 
+        if revealCircle
+            let fm = CreateFogModifierRadius(Player(23), FOG_OF_WAR_VISIBLE, realX, realY, 512, true, false)
+            fm.start()
+            doAfter(2, () -> (fm.destr()))
 
         /*for i = 0 to (bj_MAX_PLAYERS/4).toInt()-1
             countVM++
@@ -213,6 +225,8 @@ int drawCircle_dSE
 int drawCircle_loop
 
 function drawCircleLoop()
+    if stopBlight
+        return
     drawCircle_loop++
 
     if drawCircle_x<drawCircle_y 
@@ -240,9 +254,11 @@ function drawCircleLoop()
             drawCircleLoop()
         else
             drawCircle_loop = 0
-            execute(() -> drawCircleLoop())
+            //execute(() -> drawCircleLoop())
+            doAfter(0.01, -> drawCircleLoop())
 
 function drawCircle()
+    stopBlight = false
     drawCircle_R = circleDrawRadius
     drawCircle_y = drawCircle_R
     drawCircle_x = 0
@@ -258,7 +274,7 @@ function drawCircle()
     drawPoint(-drawCircle_R, 0)
 
     drawCircleLoop()
-    doAfter(0.9, () -> removeFogModifier())
+    //doAfter(0.9, () -> removeFogModifier())
 
 
 
@@ -285,6 +301,7 @@ function initCircleNext()
     circleDrawX = circleNextX
     circleDrawY = circleNextY
 
+    revealCircle = true
     drawCircle()
     revealNextCircle()
 
@@ -303,6 +320,7 @@ function initCircleFirst()
     circleDrawY = circleNextY
     circleCurrentX = circleNextX
     circleCurrentY = circleNextY
+    revealCircle = true
     drawCircle()
     revealNextCircle()
 
@@ -312,7 +330,7 @@ public function onTimerMessage()
     if circleCurrentRadius < 5
         return
     
-    print("The circle shrinks in "+circleRoundDuration[circleRound].toInt().toString()+" seconds." )
+    print("|cffffcc00The circle shrinks in "+circleRoundDuration[circleRound].toInt().toString()+" seconds.|r" )
 
     if circleRound != 1
         initCircleNext()
@@ -335,16 +353,21 @@ function moveCircle()
 
         circleDrawRadius = circleCurrentRadius
 
+        revealCircle = false
         drawCircle()
     else
         circleRound++
         moving = false
         timerCircleMessage.start(ROUND_MESSAGE_DELAY, function onTimerMessage)
         TimerDialogDisplay(windowCircleMessage, true)
-        print("The circle was shrunk. Round "+circleRound.toString()+" stats.")
+        print("|cffffcc00The circle was shrunk. Round "+circleRound.toString()+" stats.|r")
 
 public function circleStopMoving()
     moving = false
+
+public function circleClear()
+    stopBlight = true
+    SetBlightRect( Player(PLAYER_NEUTRAL_AGGRESSIVE), GetWorldBounds(), false )
 
 public function initCircle()
     //print("init circle")
