@@ -49,7 +49,7 @@ init
         ..addAction(function onDeath)
     EnumDestructablesInRect(bj_mapInitialPlayableArea, null, function registerGroup)
 
-    BARREL_DROPS.addDrop(ITEM_CLARITY_POTION, 2000)
+    BARREL_DROPS.addDrop(ITEM_HEALING_SALVE, 2000)
     BARREL_DROPS.addDrop(ITEM_HEALING_POTION, 400)
     BARREL_DROPS.addDrop(ITEM_INVULNERABILITY_POTION, 800)
 

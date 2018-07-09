@@ -17,7 +17,7 @@ function saveSingle()
             ..saveInt(maxCount, 1, u.getTypeId())
             ..saveReal(maxCount, 2, u.getX())
             ..saveReal(maxCount, 3, u.getY())
-            ..saveReal(maxCount, 4, u.getFacing())
+            ..saveReal(maxCount, 4, u.getFacingAngle().degrees())
             ..saveInt(maxCount, 5, u.getOwner().getId())
         maxCount++
 

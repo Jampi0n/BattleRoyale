@@ -7,7 +7,6 @@ import ClosureTimers
 import PlayerControl
 import General
 import SoundUtils
-import Assets
 
 public constant ROUND_MESSAGE_DELAY = 10.
 

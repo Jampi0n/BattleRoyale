@@ -2,7 +2,7 @@ package BasicPotions
 
 import ItemGeneration
 
-public constant ITEM_CLARITY_POTION = compiletime(newItem(ItemType.Usable))
+public constant ITEM_HEALING_SALVE = compiletime(newItem(ItemType.Usable))
 public constant ITEM_HEALING_POTION = compiletime(newItem(ItemType.Usable))
 public constant ITEM_INVULNERABILITY_POTION = compiletime(newItem(ItemType.Usable))
 
@@ -20,10 +20,10 @@ public function setupBasicPotions()
             ..setDurationHero(1, 5)
 
 
-        ITEM_CLARITY_POTION.getItemObject()
-            ..setIcon(Icons.bTNLesserClarityPotion)
+        ITEM_HEALING_SALVE.getItemObject()
+            ..setIcon(Icons.bTNHealingSalve)
             ..setAbility(abilId)
-            ..setName("Clarity Potion")
+            ..setName("Healing Salve")
             ..setTooltip("Restores hit points over time.")
 
         abilId = ABIL_ID_GEN.next()
