@@ -1,5 +1,5 @@
 package UnitTypes
-
+/*
 import HashMap
 
 public class UnitType
@@ -30,11 +30,11 @@ public class UnitType
         return typeIdMap.get(unitTypeId)
 
     private function getHitBox() returns int
-        return this.hitBox
+        return this.hitBox*/
 
 
 init
-    new UnitType('n00F', 96)
+    /*new UnitType('n00F', 96)
     new UnitType('n00J', 128)
     new UnitType('n00G', 64)
     new UnitType('n00P', 128)
@@ -53,4 +53,4 @@ init
     new UnitType('n00U', 96)
 
     new UnitType('n018', 96)
-    new UnitType('n019', 64)
+    new UnitType('n019', 64)*/

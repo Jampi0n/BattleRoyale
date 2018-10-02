@@ -2,7 +2,6 @@ package General
 
 import Missile
 import Buff
-import initlater UnitTypes
 
 public constant DEBUG_MODE = false
 
@@ -30,7 +29,7 @@ public function unit.isTargetable(player source, boolean allowFriends, boolean a
 
 init
     setHitBoxFunction( (unit u) -> (begin
-        return UnitType.getHitBox(u).toReal()
+        return u.getCollisionSize()
     end) )
 
     useNativeBuffListAllocation()
