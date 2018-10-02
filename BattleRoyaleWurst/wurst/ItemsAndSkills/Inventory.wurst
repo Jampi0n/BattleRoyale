@@ -326,14 +326,16 @@ public class Inventory
         for i = 0 to MAX_PAGE*6-1
             this.removeSlotAll(i)
 
-    function addItemType(int itemTypeId, int charges, int page) returns int
+    function addItemType(int itemTypeId, int charges, int page, vec2 pos) returns int
         int slot
         if page!=2
             slot = this.findItemTypeSlot(itemTypeId)
             if slot==-1 or page==-1
                 slot = this.findFirstEmptySlot(page*6, page*6+5)
                 if slot==-1 or page==-1
-                    Item.convertTypeId(itemTypeId).createWorldItem(this.assocUnit.getPos(), charges)
+                    Item.convertTypeId(itemTypeId).createWorldItem(pos, charges)
+                    printTimedToPlayer("|cffFFCC00Your inventory is full; you cannot pick up this item.|r", 8, this.assocUnit.getOwner())
+                    SOUND_ERROR.play()
                     debugPrint("1 inventory full")
                     return -1
                 else
@@ -351,7 +353,9 @@ public class Inventory
         else
             slot = this.findFirstEmptySlot(12, 17)
             if slot == -1
-                Item.convertTypeId(itemTypeId).createWorldItem(this.assocUnit.getPos(), charges)
+                Item.convertTypeId(itemTypeId).createWorldItem(pos, charges)
+                printTimedToPlayer("|cffFFCC00Your inventory is full; you cannot pick up this item.|r", 8, this.assocUnit.getOwner())
+                SOUND_ERROR.play()
                 debugPrint("2 inventory full")
                 return -1
             else
@@ -505,8 +509,11 @@ public class Inventory
             else if itemClass == ITEM_TYPE_CAMPAIGN
                 page = 2
 
-            triggerInventory.addItemType(itemTypeId+1, Item.getItemCharges(itm), page)
+            let charges = Item.getItemCharges(itm)
+            let pos = itm.getPos()
             itm.remove()
+            triggerInventory.addItemType(itemTypeId+1, charges, page, pos)
+            
 
     protected static function onItemDrop()
         let itm = GetManipulatedItem()
