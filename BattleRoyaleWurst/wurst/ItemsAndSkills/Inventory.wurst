@@ -61,11 +61,11 @@ function unit.addPermanentEffect(int itemTypeId)
     let itm = Item.convertTypeId(itemTypeId)
 
     if itm.getId() == ITEM_CLAWS_ATTACK
-        this.addBonus(Stat.AD, 10)
+        this.addBonus(Stat.AD, CLAW_DAMAGE)
     else if itm.getId() == ITEM_RING_ARMOR
-        this.addBonus(Stat.AR, 5)
+        this.addBonus(Stat.AR, RING_ARMOR)
     else if itm.getId() == ITEM_PERIAPT_HP
-        this.addBonus(Stat.HP, 50)
+        this.addBonus(Stat.HP, PERIAPT_HEALTH)
 
 function unit.removePermanentEffect(int itemTypeId)
     if not Item.hasTypeId(itemTypeId)
@@ -74,11 +74,11 @@ function unit.removePermanentEffect(int itemTypeId)
     let itm = Item.convertTypeId(itemTypeId)
 
     if itm.getId() == ITEM_CLAWS_ATTACK
-        this.addBonus(Stat.AD, -10)
+        this.addBonus(Stat.AD, -CLAW_DAMAGE)
     else if itm.getId() == ITEM_RING_ARMOR
-        this.addBonus(Stat.AR, -5)
+        this.addBonus(Stat.AR, -RING_ARMOR)
     else if itm.getId() == ITEM_PERIAPT_HP
-        this.addBonus(Stat.HP, -50)
+        this.addBonus(Stat.HP, -PERIAPT_HEALTH)
 
 function item.removeItemNoDrop()
     noDrop=true

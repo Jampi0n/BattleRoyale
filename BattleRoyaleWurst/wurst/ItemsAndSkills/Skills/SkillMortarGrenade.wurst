@@ -12,9 +12,11 @@ constant ARTILLERY_DUMMY = compiletime(ArtilleryDetection.createArtilleryDummy(0
 @compiletime
 public function setupMortarGrenade()
 
+    int dmg = 500
+
     if compiletime
         SKILL_MORTAR_GRENADE.getSkillObject()
-            ..setDescription("Fires a mortar Grebade at the target location.")
+            ..setDescription("Fires a mortar Grebade at the target location, dealing "+dmg.toString()+" damage to nearby units.endpackage")
             ..setIcon(Icons.bTNFlare)
             ..setManaCost(0)
             ..setRange(2000)
@@ -28,7 +30,7 @@ public function setupMortarGrenade()
             for unit u from g
                 if u.isTargetable(detectionUnit.getOwner(), true, true)
                     let hero = playerHero[detectionUnit.getOwner().getId()]
-                    hero.damageTarget(u, 50)
+                    hero.damageTarget(u, dmg.toReal())
             g.destr()
         end))
         SKILL_MORTAR_GRENADE.attachCode( (unit caster, unit _target, vec2 pos) -> (begin

@@ -12,10 +12,12 @@ constant BUFF_SHADOW_STRIKE = new BuffType(ABILITY_SHADOW_STRIKE, "shadowstrike"
 
 @compiletime
 public function setupShadowStrike()
+    real initialDmg = 250
+    real dotDmg = 100
     real dur = 4.5
     if compiletime
         SKILL_SHADOW_STRIKE.getSkillObject()
-            ..setDescription("Hurls a poisoned dagger which deals large initial damage, and then deals damage over time")
+            ..setDescription("Hurls a poisoned dagger which deals "+initialDmg.toInt().toString()+" initial damage, and then deals "+dotDmg.toInt().toString()+" damage per second for "+dur.toInt().toString()+" seconds.")
             ..setIcon(Icons.bTNShadowStrike)
             ..setManaCost(0)
             ..setRange(500)
@@ -36,15 +38,15 @@ public function setupShadowStrike()
                     return missileTarget.isTargetable(missile.getOwner().getOwner(), false, true)
                 end) )
                 ..setHitFunction( (Missile missile, unit missileTarget) -> (begin
-                    caster.damageTarget(missileTarget, 25)
-                    createShadowStrikeTextTag(missileTarget, 25, true)
+                    caster.damageTarget(missileTarget, initialDmg)
+                    createShadowStrikeTextTag(missileTarget, initialDmg.toInt(), true)
                     new Buff(missileTarget, caster, dur, BUFF_SHADOW_STRIKE, 1)
                     doPeriodically(1.5, (CallbackPeriodic cb) -> (begin
                         if not BuffList.hasBuffType(missileTarget, BUFF_SHADOW_STRIKE)
                             destroy cb
                         else
-                            caster.damageTarget(missileTarget, 10)
-                            createShadowStrikeTextTag(missileTarget, 10, false)
+                            caster.damageTarget(missileTarget, dotDmg)
+                            createShadowStrikeTextTag(missileTarget, dotDmg.toInt(), false)
                     end) )
                     missile.destr()
                 end))

@@ -10,9 +10,11 @@ public constant SKILL_SHOCKWAVE = compiletime(newSkill("Shockwave", 2, false))
 @compiletime
 public function setupShockwave()
 
+    real dmg = 200
+
     if compiletime
         SKILL_SHOCKWAVE.getSkillObject()
-            ..setDescription("A wave of force that ripples out from the Hero, causing damage to land units in a line.")
+            ..setDescription("A wave of force that ripples out from the Hero, causing "+dmg.toInt().toString()+" damage to land units in a line.")
             ..setIcon(Icons.bTNShockWave)
             ..setManaCost(0)
             ..setRange(1200)
@@ -29,7 +31,7 @@ public function setupShockwave()
                     return missileTarget.isTargetable(missile.getOwner().getOwner(), false, true)
                 end) )
                 ..setHitFunction( (Missile missile, unit missileTarget) -> (begin
-                    caster.damageTarget(missileTarget, 20)
+                    caster.damageTarget(missileTarget, dmg)
                 end))
             debugPrint("stormbolt")
         end))

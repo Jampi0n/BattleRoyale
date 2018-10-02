@@ -8,7 +8,7 @@ public constant SKILL_STOMP = compiletime(newSkill("War Stomp", 7, false))
 @compiletime
 public function setupStomp()
     real dur = 3
-    real dmg = 15
+    real dmg = 150
 
     if compiletime
         SKILL_STOMP.getSkillObject()

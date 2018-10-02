@@ -389,8 +389,8 @@ function damageHeroes()
         let distance = SquareRoot((x-circleCurrentX).squared() + (y-circleCurrentY).squared())
         if distance > circleCurrentRadius - 1 and IsPointBlighted(x*128, y*128) and u.isTargetable(Player(PLAYER_NEUTRAL_AGGRESSIVE), false, true)
             u.addEffect("Abilities\\Spells\\Undead\\DeathandDecay\\DeathandDecayTarget.mdl", "head").destr()
-            if u.getHP() > 1.42
-                u.setHP(u.getHP()*0.995 - 1)
+            if u.getHP() > 10.46
+                u.setHP(u.getHP()*0.995 - 10)
             else
                 blightDummy.damageTarget(u, 1000)
     end))

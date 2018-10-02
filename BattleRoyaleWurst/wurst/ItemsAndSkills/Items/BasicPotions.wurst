@@ -9,41 +9,45 @@ public constant ITEM_INVULNERABILITY_POTION = compiletime(newItem(ItemType.Usabl
 
 @compiletime
 public function setupBasicPotions()
+    real salve = 600
+    real salveDur = 6
+    int heal = 800
+    real invul = 3
     if compiletime
 
         int abilId = ABIL_ID_GEN.next()
         new AbilityDefinitionPotionofRejuvI(abilId)
             ..setAllowWhenFull(1, AllowWhenFull.NEVER)
             ..setManaRegenerated(1, 0)
-            ..setLifeRegenerated(1, 50)
+            ..setLifeRegenerated(1, salve)
             ..setCooldown(1, 1)
-            ..setDurationHero(1, 5)
+            ..setDurationHero(1, salveDur)
 
 
         ITEM_HEALING_SALVE.getItemObject()
             ..setIcon(Icons.bTNHealingSalve)
             ..setAbility(abilId)
             ..setName("Healing Salve")
-            ..setTooltip("Restores hit points over time.")
+            ..setTooltip("Restores "+salve.toInt().toString()+" hit points over "+salveDur.toInt().toString()+" seconds.")
 
         abilId = ABIL_ID_GEN.next()
         new AbilityDefinitionItemHealGreater(abilId)
-            ..setHitPointsGained(1, 100)
+            ..setHitPointsGained(1, heal)
             ..setCooldown(1, 8)
 
         ITEM_HEALING_POTION.getItemObject()
             ..setIcon(Icons.bTNPotionGreenSmall)
             ..setAbility(abilId)
             ..setName("Potion of Healing")
-            ..setTooltip("Instantly restores hit points.")
+            ..setTooltip("Instantly restores "+heal.toString()+" hit points.")
 
         abilId = ABIL_ID_GEN.next()
         new AbilityDefinition(abilId, 'AIvu')
-            ..setDurationHero(1, 3)
-            ..setCooldown(1, 3)
+            ..setDurationHero(1, invul)
+            ..setCooldown(1, invul)
 
         ITEM_INVULNERABILITY_POTION.getItemObject()
             ..setIcon(Icons.bTNGreaterInvulneralbility)
             ..setAbility(abilId)
             ..setName("Potion of Invulnerability")
-            ..setTooltip("Turns the hero invulnerable for a short time.")
+            ..setTooltip("Turns the hero invulnerable for "+invul.toInt().toString()+".")

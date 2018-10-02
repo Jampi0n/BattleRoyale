@@ -10,11 +10,11 @@ public constant SKILL_STORMBOLT = compiletime(newSkill("Stormbolt", 6, false))
 @compiletime
 public function setupStormBolt()
     real dur = 2
-    real dmg = 20
+    real dmg = 200
 
     if compiletime
         SKILL_STORMBOLT.getSkillObject()
-            ..setDescription("Throws a hammer at the target direction, damaging and stunning the first target it hits.")
+            ..setDescription("Throws a hammer at the target direction, dealing "+dmg.toInt().toString()+" to the first target it hits and stunning it for "+dur.toInt().toString()+" second.")
             ..setIcon(Icons.bTNStormBolt)
             ..setManaCost(0)
             ..setRange(800)
