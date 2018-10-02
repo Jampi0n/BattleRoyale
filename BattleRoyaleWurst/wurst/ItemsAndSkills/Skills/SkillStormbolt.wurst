@@ -10,6 +10,7 @@ public constant SKILL_STORMBOLT = compiletime(newSkill("Stormbolt", 6, false))
 @compiletime
 public function setupStormBolt()
     real dur = 2
+    real dmg = 20
 
     if compiletime
         SKILL_STORMBOLT.getSkillObject()
@@ -29,7 +30,7 @@ public function setupStormBolt()
                     return missileTarget.isTargetable(missile.getOwner().getOwner(), false, true)
                 end) )
                 ..setHitFunction( (Missile missile, unit missileTarget) -> (begin
-                    caster.damageTarget(missileTarget, 20)
+                    caster.damageTarget(missileTarget, dmg)
                     new Buff(missileTarget, caster, dur, STUNNED, 1)
                     missile.destr()
                 end))

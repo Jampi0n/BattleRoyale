@@ -23,6 +23,8 @@ public function unit.isTargetable(player source, boolean allowFriends, boolean a
         return false
     if not allowFriends and not IsUnitEnemy(this, source) 
         return false
+    if BlzIsUnitInvulnerable(this)
+        return false
     
     return true
 

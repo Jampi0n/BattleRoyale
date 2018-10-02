@@ -1,0 +1,33 @@
+package SkillFarSight
+
+import SkillGeneration
+import initlater RuntimeInitialize
+import InstantDummyCaster
+
+public constant SKILL_FARSIGHT = compiletime(newSkill("Far Sight", 5, false))
+constant DUMMY_FARSIGHT = compiletime(ABIL_ID_GEN.next())
+
+@compiletime
+public function setupFarSight()
+    real dur = 5
+
+    if compiletime
+        SKILL_FARSIGHT.getSkillObject()
+            ..setDescription("Reveals the target area for "+dur.toInt().toString()+" seconds.")
+            ..setIcon(Icons.bTNFarSight)
+            ..setManaCost(0)
+            ..setRange(99999)
+            ..setTargetType(CHANNEL_POINT_TARGET)
+
+        new AbilityDefinitionFarseerFarSight(DUMMY_FARSIGHT)
+            ..setManaCost(1, 0)
+            ..setAreaofEffect(1, 2000)
+            ..setCooldown(1, 0)
+        
+
+    else
+        SKILL_FARSIGHT.attachCode( (unit caster, unit _target, vec2 pos) -> (begin
+            InstantDummyCaster.castPoint(caster.getOwner(), DUMMY_FARSIGHT, 1, "farsight", pos)
+        end))
+
+init

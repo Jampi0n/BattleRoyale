@@ -1,0 +1,36 @@
+package SkillStomp
+
+import SkillGeneration
+import initlater RuntimeInitialize
+
+public constant SKILL_STOMP = compiletime(newSkill("Stomp", 7, false))
+
+@compiletime
+public function setupStomp()
+    real dur = 3
+    real dmg = 15
+
+    if compiletime
+        SKILL_STOMP.getSkillObject()
+            ..setDescription("Slams the ground, dealing "+dmg.toInt().toString()+" damage to nearby enemy land units and stunning them for "+dur.toInt().toString()+" seconds.")
+            ..setIcon(Icons.bTNWarStomp)
+            ..setManaCost(0)
+            ..setTargetType(CHANNEL_INSTANT)
+
+        
+
+    else
+        SKILL_STOMP.attachCode( (unit caster, unit _target, vec2 pos) -> (begin
+            
+            let g = CreateGroup()
+            let owner = caster.getOwner()
+            addEffect(Abilities.warStompCaster, caster.getPos()).destr()
+            g.enumUnitsInRange(caster.getPos(), 300)
+            for u from g
+                if u.isTargetable(owner, false, true)
+                    caster.damageTarget(u, dmg)
+                    new Buff(u, caster, dur, STUNNED, 1)
+            g.destr()
+        end))
+
+init

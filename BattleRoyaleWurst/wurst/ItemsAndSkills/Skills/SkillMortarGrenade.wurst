@@ -25,7 +25,7 @@ public function setupMortarGrenade()
         ArtilleryDetection.registerArtilleryHit(DETECTION_DUMMY, (unit detectionUnit) -> (begin
             let g = CreateGroup()
             g.enumUnitsInRange(detectionUnit.getPos(), 250)
-            for unit u in g
+            for unit u from g
                 if u.isTargetable(detectionUnit.getOwner(), true, true)
                     let hero = playerHero[detectionUnit.getOwner().getId()]
                     hero.damageTarget(u, 50)

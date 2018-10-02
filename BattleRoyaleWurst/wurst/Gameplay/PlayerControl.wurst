@@ -131,7 +131,7 @@ function setupHeroes()
     group g = CreateGroup()
     maxLocations = 0
     GroupEnumUnitsOfPlayer(g, Player(PLAYER_NEUTRAL_PASSIVE) , null)
-    for unit u in g
+    for unit u from g
         if u.getTypeId() == 'h00L'
             startX[maxLocations] = R2I(GetUnitX(u))+0.5
             startY[maxLocations] = R2I(GetUnitY(u))+0.5

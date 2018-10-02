@@ -8,6 +8,8 @@ import public SkillShockwave
 import public SkillSpeedBoost
 import public SkillReflector
 import public SkillMortarGrenade
+import public SkillFarSight
+import public SkillStomp
 
 public boolean initSkills = true
 
@@ -20,6 +22,8 @@ public function setupAllSkills()
     setupSpeedBoost()
     setupReflector()
     setupMortarGrenade()
+    setupFarSight()
+    setupStomp()
 
 
 //import SkillGeneration

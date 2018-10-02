@@ -166,7 +166,7 @@ function onMapInit()
     SetAllyColorFilterState(0)
     EnableMinimapFilterButtons( false, false )
     GroupEnumUnitsOfPlayer(g, Player(PLAYER_NEUTRAL_PASSIVE), null)
-    for unit u in g
+    for unit u from g
         if u.isType(UNIT_TYPE_STRUCTURE)
             u.removeAbility('Amov')
 
