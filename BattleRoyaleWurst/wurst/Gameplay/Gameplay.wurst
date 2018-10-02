@@ -7,9 +7,14 @@ import PlayerControl
 import Circle
 import ClosureTimers
 import Inventory
+import SoundUtils
 
 boolean firstRound = true
 public boolean mapLoading
+
+
+constant SOUND_ROUND_START = new SoundDefinition(Sounds.gameFound, false, false)
+constant SOUND_ROUND_END = new SoundDefinition(Sounds.goodJob, false, false)
 
 
 function loadMapState()
@@ -42,6 +47,7 @@ function gameStarts()
 function roundBegins()
     timerRoundStart.pause()
     //print("gameplay.gameRoundBegins")
+    SOUND_ROUND_START.play().snd.setVolume(60)
     print("|cffffcc00Let the Battle begin!|r")
 
     TimerDialogDisplay(windowRoundStart, false)
@@ -56,10 +62,10 @@ function roundStarts()
     real time
     if firstRound
         gameStarts()
-        time = 5
+        time = 8
         firstRound = false
     else
-        time = 5 //can be increased, if loading takes too long
+        time = 8 //can be increased, if loading takes too long
 
     //print("gameplay.roundStarts")
 
@@ -73,21 +79,22 @@ function roundStarts()
     TimerDialogDisplay(windowCircleMessage , false)
 
     FogEnable( true )
-    CinematicFadeBJ( bj_CINEFADETYPE_FADEIN, 2.00, "ReplaceableTextures\\CameraMasks\\White_mask.blp", 0, 0, 0, 0 )
-    EnableUserControl(true)
+    CinematicFadeBJ( bj_CINEFADETYPE_FADEIN, 1, "ReplaceableTextures\\CameraMasks\\White_mask.blp", 0, 0, 0, 0 )
+    doAfter(1) ->
+        CinematicModeExBJ(false, bj_FORCE_ALL_PLAYERS, 1)
+    doAfter(2) ->
+        EnableUserControl(true)
 
 //runs at the beginning of each round (instant)
 function roundInit()
     //print("Gameplay.roundInit")
-    CinematicFadeBJ( bj_CINEFADETYPE_FADEOUT, 0.00, "ReplaceableTextures\\CameraMasks\\White_mask.blp", 0, 0, 0, 0 )
     EnableUserControl(false)
     FogMaskEnable(false)
     FogEnable(false)
     real time
     if not firstRound
-        loadMapState()
         time = 2
-        CinematicFadeBJ( bj_CINEFADETYPE_FADEOUT, time, "ReplaceableTextures\\CameraMasks\\White_mask.blp", 0, 0, 0, 0 )
+        loadMapState()
     else
         time = 2
 
@@ -118,16 +125,24 @@ public function roundEnds()
     circleStopMoving()
     circleClear()
 
-    doAfter(0, () -> roundInit() )
+    CinematicFadeBJ( bj_CINEFADETYPE_FADEOUT, 2, "ReplaceableTextures\\CameraMasks\\White_mask.blp", 0, 0, 0, 0 )
+    CinematicModeExBJ(true, bj_FORCE_ALL_PLAYERS, 2)
+    doAfter(2, () -> roundInit() )
 
 //last hero died
-public function roundOver()
+public function roundOver(int playerId)
+
+    int reward = 100
 
     timerCircleMessage.pause()
     timerCircleMove.pause()
     timerRoundStart.pause()
 
     timerRoundEnd.start(5, function roundEnds)
+
+    print("|cffffcc00"+players[playerId].getName()+" is the last remainign hero and gets "+reward.toString()+" points!|r")
+    scoreAddScore(playerId, reward)
+    SOUND_ROUND_END.play()
 
     TimerDialogDisplay(windowRoundEnd , true)
     TimerDialogDisplay(windowCircleMove , false)
@@ -144,6 +159,8 @@ function mapConfig()
 
 //runs at the beginning of the map (loadingscreen)
 function onMapInit()
+    CinematicModeExBJ(true, bj_FORCE_ALL_PLAYERS, 0)
+    CinematicFadeBJ(bj_CINEFADETYPE_FADEOUT, 0, "ReplaceableTextures\\CameraMasks\\White_mask.blp", 0, 0, 0, 0)
     group g = CreateGroup()
     SetCreepCampFilterState( false )
     SetAllyColorFilterState(0)

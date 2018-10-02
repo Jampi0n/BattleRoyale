@@ -209,16 +209,16 @@ function onDeath()
         hotkeyHero2[pId].kill()
         hotkeyHero3[pId].kill()
 
-        var ret = false
+        var lastAlive = -1
 
         for i = 0 to bj_MAX_PLAYERS-1
 
             if playerState[i] == PlayerState.ALIVE
-                if ret
+                if lastAlive != -1
                     return
-                ret = true
+                lastAlive = i
 
-        roundOver()
+        roundOver(lastAlive)
 
     else
         if u.getOwner() == Player(PLAYER_NEUTRAL_AGGRESSIVE)
@@ -380,6 +380,10 @@ function scoreUnitKill(int killer)
     scoreUnitKills[killer]++
     scoreScore[killer] += 5
     updateScore(killer, true, true)
+
+public function scoreAddScore(int playerId, int score)
+    scoreScore[playerId] += score
+    updateScore(playerId, true, true)
 
 function initMultiboard()
     multiboarditem mbitem
