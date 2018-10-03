@@ -1,0 +1,34 @@
+package MapInformation
+
+import Assets
+import Quest
+
+
+function howToPlay()
+    CreateQuest()
+        ..setTitle("Items & Skills")
+        ..setDescription(
+            "Items can be found in barrels and can be looted from bosses and enemy heroes. \n" +
+            "There are three different categories of items. The categories are accessible with F2, F3 and F4. \n" +
+            "F2: Skill items can be activated to have them as usable abilities for a limited number of uses.\n"+
+            "F3: Usable items can be used to gain an instant or temporary effect.\n"+
+            "F4: Permanent items improve your stats as long as you have them in the inventory.\n"
+            )
+        ..setIcon(Icons.bTNSkillz)
+        ..discovered(true)
+
+function gameplay()
+    CreateQuest()
+        ..setTitle("How To Play")
+        ..setDescription(
+            "Be the last player to be alive.\n"+
+            "Collect items and level up your hero to get stronger.\n"+
+            "The Blight Circle comes from the outside of the map and reduces the playable area.\n"+
+            "The safe area is marked on the minimap. Stay out of the blight to avoid taking damage.\n"
+            )
+        ..setIcon(Icons.bTNScroll)
+        ..discovered(true)
+
+init
+    gameplay()
+    howToPlay()
